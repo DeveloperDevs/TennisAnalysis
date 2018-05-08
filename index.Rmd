@@ -4,15 +4,35 @@ output:
   word_document: default
   pdf_document: default
 ---
-```{r knitr_setup, echo=FALSE}
+```{r knitr_setup, echo=FALSE, message=FALSE}
 knitr::opts_chunk$set(cache=TRUE)
+library(tidyverse)
 ```
 
+## Tutorial: An Analysis of Roger Federer, Rafael Nadal and Novak Djokovic in Grand Slams
+
+### Background
+Currently, tennis is experiencing the end of a "Golden Age". Right now, there are three all time greats competing at the highest stage; all while being at the closing door of their careers. These three are Roger Federer, Rafael Nadal and Novak Djokovic.
+
+Roger Federer is widely considered the greatest of all time (GOAT). He has broken countless records and received many awards. Even at the age of 36, Roger Federer still is at the top of the rankings and continues to be a favorite for all of the biggest tournaments.
+
+Rafael Nadal is considered the other contender for greatest tennis player of all time status. He is considered the greatest clay court player of all time and joins Federer at the top of the rankings even today, at the age of 31
+
+Novak Djokovic is the youngest of the three, and after playing 3rd fiddle to Federer and Nadal, burst on to the scene in 2011 to take the crown at the top and completely dominate the tour at unprecedented levels from 2011 to 2016. He's currently still in the top rankings at the age of 30.
+
+One of the biggest contributors to the GOAT (Greatest of All Time) status are Grand Slam tournaments. There are four Grand Slam tournaments each year. These four tournaments, are the most prestigious tournaments in tennis and winning the trophy at one of these four tournaments is considered a great legacy. In the last 12 years, there were only 7 different grand slam champions. Roger Federer, Rafael Nadal and Novak Djokovic have held a sustained period of dominance over grand slams, winning a combined 48 out of the last 59 slams. (Federer winning 20, Nadal winning 16, Djokovic winning 12)
+
+This tutorial will take you through the entire data science pipeline, as we explore the performance of these three all time greats in the grand slam tournaments that they've participated in throughout their careers.
+
 ### Data Curation
+First we need to gather data for all grand slam tournaments. We can find all ATP Men's matches from 2000 to 2016 at this link:
+https://www.kaggle.com/jordangoblet/atp-tour-20002016
+
+For Tennis Fans: It is important to note that Federer and Nadal have won a combined total of 5 grand slams in 2017 and 2018. This data will be missing and not be included in the study due to the statistics not being released by the ATP world tour.
+
+As you can see below, we have loaded the data.
 
 ```{r load_data, message=FALSE}
-library(tidyverse)
-
 tennis <- read.csv("/Users/Devin/Documents/Data.csv")
 tennis %>% slice(1:10)
 ```
