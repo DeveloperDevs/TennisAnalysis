@@ -16,9 +16,9 @@ Currently, tennis is experiencing the end of a "Golden Age". Right now, there ar
 
 Roger Federer is widely considered the greatest of all time (GOAT). He has broken countless records and received many awards. Even at the age of 36, Roger Federer still is at the top of the rankings and continues to be a favorite for all of the biggest tournaments.
 
-Rafael Nadal is considered the other contender for greatest tennis player of all time status. He is considered the greatest clay court player of all time and joins Federer at the top of the rankings even today, at the age of 31
+Rafael Nadal is considered the other main contender for greatest tennis player of all time status. He is considered the greatest clay court player of all time and joins Federer at the top of the rankings even today, at the age of 31
 
-Novak Djokovic is the youngest of the three, and after playing 3rd fiddle to Federer and Nadal, burst on to the scene in 2011 to take the crown at the top and completely dominate the tour at unprecedented levels from 2011 to 2016. He's currently still in the top rankings at the age of 30.
+Novak Djokovic is the youngest of the three, and after playing 3rd fiddle to Federer and Nadal, burst on to the scene in 2011 to take the crown at the top and completely dominate the tour at unprecedented levels from 2011 to 2016. Although he does not yet have the career accomplishments to equal Roger Federer or Rafael Nadal, he is considered a huge threat to his legacy. He is currently recovering from surgery at the moment, but could return into grand slam winning for soon.
 
 One of the biggest contributors to the GOAT (Greatest of All Time) status are Grand Slam tournaments. There are four Grand Slam tournaments each year. These four tournaments, are the most prestigious tournaments in tennis and winning the trophy at one of these four tournaments is considered a great legacy. In the last 12 years, there were only 7 different grand slam champions. Roger Federer, Rafael Nadal and Novak Djokovic have held a sustained period of dominance over grand slams, winning a combined 48 out of the last 59 slams. (Federer winning 20, Nadal winning 16, Djokovic winning 12)
 
@@ -38,13 +38,35 @@ tennis %>% slice(1:10)
 ```
 
 ### Data Parsing
+First, since this tutorial only concerns grand slam matches, we can filter out all non grand slam matches.
+So, let's put the matches into a pipeline and use filter to keep all matches with a Series attribute of "Grand Slam"
 
-1) My pipeline grabs the first 10 best of 5 that Roger Federer has won and started very strong (Lopsided score in the first set).
+```{r}
+slamMatches <- tennis %>%
+  filter(Series == "Grand Slam") 
+slamMatches %>% slice(1:10)
+```
+
+Now, let's get the individual matches for each player we are interested in. We can use filter to grab all of Federer, Nadal and Djokovic's wins. We are only interested in their wins for this tutorial.
+
+```{r}
+federerMatches <- slamMatches %>%
+  filter(Winner == "Federer R.")
+federerMatches %>% slice(1:10)
+
+nadalMatches <- slamMatches %>%
+  filter(Winner == "Nadal R.")
+nadalMatches %>% slice(1:10)
+
+djokovicMatches <- slamMatches %>%
+  filter(Winner == "Djokovic N.")
+djokovicMatches %>% slice(1:10)
+```
+
+My pipeline grabs the first 10 best of 5 that Roger Federer has won and started very strong (Lopsided score in the first set).
 I think this is useful because it shows me which players may be either slow starters against Federer or simply good matchups for Federer
 
-
 Here is the step by step process:
-
 
 First I grab all best of 5 by filtering out matches that are best of 3 (I can do this by simply checking whether best.of is greater than three, because the value will either be 3 or 5). 
 
