@@ -7,6 +7,9 @@ output:
 ```{r knitr_setup, echo=FALSE, message=FALSE}
 knitr::opts_chunk$set(cache=TRUE)
 library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 ```
 
 ## Tutorial: An Analysis of Roger Federer, Rafael Nadal and Novak Djokovic in Grand Slams
@@ -34,7 +37,7 @@ As you can see below, we have loaded the data.
 
 ```{r load_data, message=FALSE}
 tennis <- read.csv("/Users/Devin/Documents/Data.csv")
-tennis %>% slice(1:10)
+head(tennis)
 ```
 
 First, since this tutorial only concerns grand slam matches, we can filter out all non grand slam matches.
@@ -44,7 +47,7 @@ So first, let's put the matches into a pipeline and use filter to keep all match
 ```{r}
 slamMatches <- tennis %>%
   filter(Series == "Grand Slam") 
-slamMatches %>% slice(1:10)
+head(slamMatches)
 ```
 
 Now, there are a lot of attributes that we do not really need. Let's tidy up the data a little bit.
@@ -59,16 +62,17 @@ We can select only the attributes that we plan on using:
 ```{r}
 slamMatches <- slamMatches %>%
   select(Tournament, Date, Surface, Round, Winner, Loser, WRank, LRank, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets) 
-slamMatches %>% slice(1:10)
+head(slamMatches)
 ```
 
 Missing data can be a problem. So let's handle this missing data before it messes up any calculations.
+
 - Some players do not have a ranking, so we must replace their ranking with 1000. We can check if LRank is N/A and replace with 0. To do this, we need to convert WRank and LRank to numeric typing.
 - Some matches did not play a specific set (Due to injuries, etc), so we must replace those set scores with 0. We can check W1-W5 and L1-L5 for N/A values and replace with 0.
 
 ```{r}
-slamMatches$WRank <- as.numeric(slamMatches$WRank)
-slamMatches$LRank <- as.numeric(slamMatches$LRank)
+slamMatches$WRank <- suppressWarnings(as.numeric(as.character(slamMatches$WRank)))
+slamMatches$LRank <- suppressWarnings(as.numeric(as.character(slamMatches$LRank)))
 slamMatches$LRank[is.na(slamMatches$LRank)] <- as.factor(1000)
 
 slamMatches$W1[is.na(slamMatches$W1)] <- 0
@@ -82,7 +86,7 @@ slamMatches$L4[is.na(slamMatches$L4)] <- 0
 slamMatches$W5[is.na(slamMatches$W5)] <- 0
 slamMatches$L5[is.na(slamMatches$L5)] <- 0
 
-slamMatches %>% slice(1:10)
+head(slamMatches)
 ```
 
 Now, there are a couple of attributes that could be useful but don't yet exist in this data frame. Let's see if we can add them.
@@ -90,14 +94,16 @@ Now, there are a couple of attributes that could be useful but don't yet exist i
 - The first will be what we call a rank differential. It is the losing players rank minus the winning players rank. This attribute will be used to determine how big of an upset, rankwise, some matches are. The lower the value is in the negatives, the more of an upset the match was. The only problem is, that WRank and LRank are factors, so we must first convert them to the correct type.
 - The second is the number of games won by the winner. We can calculate this by adding up the scores of W1-W5
 - The third is the number of games won by the loser. We can calculate this by adding up the scores of L1-L5
+- The fourth is Year. We are simply going to cut off the year from the Date attribute. Because all slams are at relatively the same date each year.
 
 ```{r, message=FALSE}
 slamMatches <- slamMatches %>%
   mutate(Differential = LRank - WRank) %>%
   mutate(Wgames = W1 + W2 + W3 + W4 + W5) %>%
   mutate(Lgames = L1 + L2 + L3 + L4 + L5) %>%
-  select(Tournament, Date, Surface, Round, Winner, Loser, WRank, LRank, Differential, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets, Wgames, Lgames) 
-slamMatches %>% slice(1:10)
+  mutate(Year = format(as.Date(slamMatches$Date, format="%d/%m/%Y"),"%Y")) %>%
+  select(Tournament, Year, Date, Surface, Round, Winner, Loser, WRank, LRank, Differential, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets, Wgames, Lgames) 
+head(slamMatches)
 ```
 
 Now, let's get the individual matches for each player we are interested in. We can use filter to grab all matches where Roger Federer, Rafael Nadal or Novak Djokovic was either the winner or loser, depending on which player the data frame is for. We will be using these three data frames for a lot of analysis to come.
@@ -105,25 +111,103 @@ Now, let's get the individual matches for each player we are interested in. We c
 ```{r}
 rfMatches <- slamMatches %>%
   filter(Winner == "Federer R." | Loser == "Federer R.")
-rfMatches %>% slice(1:10)
+head(rfMatches)
 
 rnMatches <- slamMatches %>%
   filter(Winner == "Nadal R." | Loser == "Nadal R.")
-rnMatches %>% slice(1:10)
+head(rnMatches)
 
 ndMatches <- slamMatches %>%
   filter(Winner == "Djokovic N." | Loser == "Djokovic N.")
-ndMatches %>% slice(1:10)
+head(ndMatches)
 ```
 
 ### Exploratory Data Analysis
+Now that we have our data properly prepared. Let's analyze it.
+
+The main cornerstone of being an all time great, is being able to consistently beat top ranked players at the biggest tournaments. So, let's look at how each of our all time greats perform against top 20 ranked players. 
+
+So, to do this, we are going to take the data frame and filter out all losing players greater than 20 (Which in the case of tennis, would be a worse rank). We also will group by year so that we can plot our player's top 20 wins per yearly season.
+
+After we have the groups, we can summarize these wins by using the n function to calculate the number of top 20 wins each player had for each season/group. Now, for each player we add a Player attribute to help us distinguish which player came from which data frame, and then we bind the three data frames together.
+
+Then, we plot a bar graph that displays each player's Top 20 wins side by side.
+
+```{r}
+rfTop20 <- rfMatches %>%
+  filter(Winner == "Federer R.") %>%
+  filter(LRank <= 20) %>%
+  group_by(Year) %>%
+  summarize(top20Wins = n()) %>%
+  mutate(Player = "Federer")
+
+rnTop20 <- rnMatches %>%
+  filter(Winner == "Nadal R.") %>%
+  filter(LRank <= 20) %>%
+  group_by(Year) %>%
+  summarize(top20Wins = n()) %>%
+  mutate(Player = "Nadal")
+
+ndTop20 <- ndMatches %>%
+  filter(Winner == "Djokovic N.") %>%
+  filter(LRank <= 20) %>%
+  group_by(Year) %>%
+  summarize(top20Wins = n()) %>%
+  mutate(Player = "Djokovic")
+
+top20 <- rbind(rfTop20, rnTop20, ndTop20)
+  
+ggplot(top20, mapping = aes(x=Year, y=top20Wins)) + 
+  geom_bar(aes(fill = Player), position = "dodge", stat="identity") + 
+  ggtitle("Top 20 Wins Per Year") + 
+  ylab("Top 20 Wins") + xlab("Year") +
+  scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00"))
+  
+```
+
+We can also do the same for top 10 wins:
+
+```{r}
+rfTop10 <- rfMatches %>%
+  filter(Winner == "Federer R.") %>%
+  filter(LRank <= 10) %>%
+  group_by(Year) %>%
+  summarize(top10Wins = n()) %>%
+  mutate(Player = "Federer")
+
+rnTop10 <- rnMatches %>%
+  filter(Winner == "Nadal R.") %>%
+  filter(LRank <= 10) %>%
+  group_by(Year) %>%
+  summarize(top10Wins = n()) %>%
+  mutate(Player = "Nadal")
+
+ndTop10 <- ndMatches %>%
+  filter(Winner == "Djokovic N.") %>%
+  filter(LRank <= 10) %>%
+  group_by(Year) %>%
+  summarize(top10Wins = n()) %>%
+  mutate(Player = "Djokovic")
+
+top10 <- rbind(rfTop10, rnTop10, ndTop10)
+  
+ggplot(top10, mapping = aes(x=Year, y=top10Wins)) + 
+  geom_bar(aes(fill = Player), position = "dodge", stat="identity") + 
+  ggtitle("Top 10 Wins Per Year") + 
+  ylab("Top 10 Wins") + xlab("Year") +
+  scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00"))
+  
+```
+
 Posible things to do:
-- Analyze top 20 wins
+
 - Analyze top 10 wins
 - Analyze top 20/10 wins by surface
 - Analyze wins in quarterfinals and above
 - Analyze wins in finals
+- Average rank of players faced by year
 - Analyze biggest upsets
+- Analyze dominant performances
 
 
 

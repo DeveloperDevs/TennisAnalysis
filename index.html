@@ -138,56 +138,82 @@ $(document).ready(function () {
 <p>For Tennis Fans: It is important to note that Federer and Nadal have won a combined total of 5 grand slams in 2017 and 2018. This data will be missing and not be included in the study due to the statistics not being released by the ATP world tour.</p>
 <p>As you can see below, we have loaded the data.</p>
 <pre class="r"><code>tennis &lt;- read.csv(&quot;/Users/Devin/Documents/Data.csv&quot;)
-tennis %&gt;% slice(1:10)</code></pre>
-<pre><code>## # A tibble: 10 x 54
-##      ATP Location Tournament    Date   Series  Court Surface Round Best.of
-##    &lt;int&gt; &lt;fct&gt;    &lt;fct&gt;         &lt;fct&gt;  &lt;fct&gt;   &lt;fct&gt; &lt;fct&gt;   &lt;fct&gt;   &lt;int&gt;
-##  1     1 Adelaide Australian H… 3/01/… Intern… Outd… Hard    1st …       3
-##  2     1 Adelaide Australian H… 3/01/… Intern… Outd… Hard    1st …       3
-##  3     1 Adelaide Australian H… 3/01/… Intern… Outd… Hard    1st …       3
-##  4     1 Adelaide Australian H… 3/01/… Intern… Outd… Hard    1st …       3
-##  5     1 Adelaide Australian H… 3/01/… Intern… Outd… Hard    1st …       3
-##  6     1 Adelaide Australian H… 3/01/… Intern… Outd… Hard    1st …       3
-##  7     1 Adelaide Australian H… 3/01/… Intern… Outd… Hard    1st …       3
-##  8     1 Adelaide Australian H… 3/01/… Intern… Outd… Hard    1st …       3
-##  9     1 Adelaide Australian H… 3/01/… Intern… Outd… Hard    1st …       3
-## 10     1 Adelaide Australian H… 3/01/… Intern… Outd… Hard    1st …       3
-## # ... with 45 more variables: Winner &lt;fct&gt;, Loser &lt;fct&gt;, WRank &lt;fct&gt;,
-## #   LRank &lt;fct&gt;, W1 &lt;int&gt;, L1 &lt;int&gt;, W2 &lt;int&gt;, L2 &lt;int&gt;, W3 &lt;int&gt;,
-## #   L3 &lt;int&gt;, W4 &lt;int&gt;, L4 &lt;int&gt;, W5 &lt;int&gt;, L5 &lt;int&gt;, Wsets &lt;int&gt;,
-## #   Lsets &lt;int&gt;, Comment &lt;fct&gt;, CBW &lt;dbl&gt;, CBL &lt;dbl&gt;, GBW &lt;dbl&gt;,
-## #   GBL &lt;dbl&gt;, IWW &lt;dbl&gt;, IWL &lt;dbl&gt;, SBW &lt;dbl&gt;, SBL &lt;dbl&gt;, B365W &lt;dbl&gt;,
-## #   B365L &lt;dbl&gt;, B.WW &lt;dbl&gt;, B.WL &lt;dbl&gt;, EXW &lt;dbl&gt;, EXL &lt;dbl&gt;, PSW &lt;dbl&gt;,
-## #   PSL &lt;dbl&gt;, WPts &lt;int&gt;, LPts &lt;fct&gt;, UBW &lt;dbl&gt;, UBL &lt;dbl&gt;, LBW &lt;dbl&gt;,
-## #   LBL &lt;dbl&gt;, SJW &lt;dbl&gt;, SJL &lt;dbl&gt;, MaxW &lt;dbl&gt;, MaxL &lt;dbl&gt;, AvgW &lt;dbl&gt;,
-## #   AvgL &lt;dbl&gt;</code></pre>
+head(tennis)</code></pre>
+<pre><code>##   ATP Location                         Tournament      Date        Series
+## 1   1 Adelaide Australian Hardcourt Championships 3/01/2000 International
+## 2   1 Adelaide Australian Hardcourt Championships 3/01/2000 International
+## 3   1 Adelaide Australian Hardcourt Championships 3/01/2000 International
+## 4   1 Adelaide Australian Hardcourt Championships 3/01/2000 International
+## 5   1 Adelaide Australian Hardcourt Championships 3/01/2000 International
+## 6   1 Adelaide Australian Hardcourt Championships 3/01/2000 International
+##     Court Surface     Round Best.of       Winner          Loser WRank
+## 1 Outdoor    Hard 1st Round       3   Dosedel S.    Ljubicic I.    63
+## 2 Outdoor    Hard 1st Round       3   Enqvist T.     Clement A.     5
+## 3 Outdoor    Hard 1st Round       3    Escude N.  Baccanello P.    40
+## 4 Outdoor    Hard 1st Round       3   Federer R. Knippschild J.    65
+## 5 Outdoor    Hard 1st Round       3  Fromberg R.  Woodbridge T.    81
+## 6 Outdoor    Hard 1st Round       3 Gambill J.M.     Arthurs W.    58
+##   LRank W1 L1 W2 L2 W3 L3 W4 L4 W5 L5 Wsets Lsets   Comment CBW CBL GBW
+## 1    77  6  4  6  2 NA NA NA NA NA NA     2     0 Completed  NA  NA  NA
+## 2    56  6  3  6  3 NA NA NA NA NA NA     2     0 Completed  NA  NA  NA
+## 3   655  6  7  7  5  6  3 NA NA NA NA     2     1 Completed  NA  NA  NA
+## 4    87  6  1  6  4 NA NA NA NA NA NA     2     0 Completed  NA  NA  NA
+## 5   198  7  6  5  7  6  4 NA NA NA NA     2     1 Completed  NA  NA  NA
+## 6   105  3  6  7  6  6  4 NA NA NA NA     2     1 Completed  NA  NA  NA
+##   GBL IWW IWL SBW SBL B365W B365L B.WW B.WL EXW EXL PSW PSL WPts LPts UBW
+## 1  NA  NA  NA  NA  NA    NA    NA   NA   NA  NA  NA  NA  NA   NA       NA
+## 2  NA  NA  NA  NA  NA    NA    NA   NA   NA  NA  NA  NA  NA   NA       NA
+## 3  NA  NA  NA  NA  NA    NA    NA   NA   NA  NA  NA  NA  NA   NA       NA
+## 4  NA  NA  NA  NA  NA    NA    NA   NA   NA  NA  NA  NA  NA   NA       NA
+## 5  NA  NA  NA  NA  NA    NA    NA   NA   NA  NA  NA  NA  NA   NA       NA
+## 6  NA  NA  NA  NA  NA    NA    NA   NA   NA  NA  NA  NA  NA   NA       NA
+##   UBL LBW LBL SJW SJL MaxW MaxL AvgW AvgL
+## 1  NA  NA  NA  NA  NA   NA   NA   NA   NA
+## 2  NA  NA  NA  NA  NA   NA   NA   NA   NA
+## 3  NA  NA  NA  NA  NA   NA   NA   NA   NA
+## 4  NA  NA  NA  NA  NA   NA   NA   NA   NA
+## 5  NA  NA  NA  NA  NA   NA   NA   NA   NA
+## 6  NA  NA  NA  NA  NA   NA   NA   NA   NA</code></pre>
 <p>First, since this tutorial only concerns grand slam matches, we can filter out all non grand slam matches.</p>
 <p>So first, let’s put the matches into a pipeline and use filter to keep all matches with a Series attribute of “Grand Slam”.</p>
 <pre class="r"><code>slamMatches &lt;- tennis %&gt;%
   filter(Series == &quot;Grand Slam&quot;) 
-slamMatches %&gt;% slice(1:10)</code></pre>
-<pre><code>## # A tibble: 10 x 54
-##      ATP Location  Tournament   Date    Series Court Surface Round Best.of
-##    &lt;int&gt; &lt;fct&gt;     &lt;fct&gt;        &lt;fct&gt;   &lt;fct&gt;  &lt;fct&gt; &lt;fct&gt;   &lt;fct&gt;   &lt;int&gt;
-##  1     6 Melbourne Australian … 17/01/… Grand… Outd… Hard    1st …       5
-##  2     6 Melbourne Australian … 17/01/… Grand… Outd… Hard    1st …       5
-##  3     6 Melbourne Australian … 17/01/… Grand… Outd… Hard    1st …       5
-##  4     6 Melbourne Australian … 17/01/… Grand… Outd… Hard    1st …       5
-##  5     6 Melbourne Australian … 17/01/… Grand… Outd… Hard    1st …       5
-##  6     6 Melbourne Australian … 17/01/… Grand… Outd… Hard    1st …       5
-##  7     6 Melbourne Australian … 17/01/… Grand… Outd… Hard    1st …       5
-##  8     6 Melbourne Australian … 17/01/… Grand… Outd… Hard    1st …       5
-##  9     6 Melbourne Australian … 17/01/… Grand… Outd… Hard    1st …       5
-## 10     6 Melbourne Australian … 17/01/… Grand… Outd… Hard    1st …       5
-## # ... with 45 more variables: Winner &lt;fct&gt;, Loser &lt;fct&gt;, WRank &lt;fct&gt;,
-## #   LRank &lt;fct&gt;, W1 &lt;int&gt;, L1 &lt;int&gt;, W2 &lt;int&gt;, L2 &lt;int&gt;, W3 &lt;int&gt;,
-## #   L3 &lt;int&gt;, W4 &lt;int&gt;, L4 &lt;int&gt;, W5 &lt;int&gt;, L5 &lt;int&gt;, Wsets &lt;int&gt;,
-## #   Lsets &lt;int&gt;, Comment &lt;fct&gt;, CBW &lt;dbl&gt;, CBL &lt;dbl&gt;, GBW &lt;dbl&gt;,
-## #   GBL &lt;dbl&gt;, IWW &lt;dbl&gt;, IWL &lt;dbl&gt;, SBW &lt;dbl&gt;, SBL &lt;dbl&gt;, B365W &lt;dbl&gt;,
-## #   B365L &lt;dbl&gt;, B.WW &lt;dbl&gt;, B.WL &lt;dbl&gt;, EXW &lt;dbl&gt;, EXL &lt;dbl&gt;, PSW &lt;dbl&gt;,
-## #   PSL &lt;dbl&gt;, WPts &lt;int&gt;, LPts &lt;fct&gt;, UBW &lt;dbl&gt;, UBL &lt;dbl&gt;, LBW &lt;dbl&gt;,
-## #   LBL &lt;dbl&gt;, SJW &lt;dbl&gt;, SJL &lt;dbl&gt;, MaxW &lt;dbl&gt;, MaxL &lt;dbl&gt;, AvgW &lt;dbl&gt;,
-## #   AvgL &lt;dbl&gt;</code></pre>
+head(slamMatches)</code></pre>
+<pre><code>##   ATP  Location      Tournament       Date     Series   Court Surface
+## 1   6 Melbourne Australian Open 17/01/2000 Grand Slam Outdoor    Hard
+## 2   6 Melbourne Australian Open 17/01/2000 Grand Slam Outdoor    Hard
+## 3   6 Melbourne Australian Open 17/01/2000 Grand Slam Outdoor    Hard
+## 4   6 Melbourne Australian Open 17/01/2000 Grand Slam Outdoor    Hard
+## 5   6 Melbourne Australian Open 17/01/2000 Grand Slam Outdoor    Hard
+## 6   6 Melbourne Australian Open 17/01/2000 Grand Slam Outdoor    Hard
+##       Round Best.of      Winner          Loser WRank LRank W1 L1 W2 L2 W3
+## 1 1st Round       5   Agassi A.      Puerta M.     1   112  6  2  6  2  6
+## 2 1st Round       5    Alami K.       Manta L.    35   107  6  4  7  6  7
+## 3 1st Round       5    Arazi H.      Alonso J.    41   111  6  3  7  6  6
+## 4 1st Round       5  Behrend T.    Meligeni F.   106    28  6  2  4  6  6
+## 5 1st Round       5 Bjorkman J. Stoltenberg J.    76    81  6  7  6  4  6
+## 6 1st Round       5    Black W.   Gambill J.M.   151    57  7  6  6  1  6
+##   L3 W4 L4 W5 L5 Wsets Lsets   Comment CBW CBL GBW GBL IWW IWL SBW SBL
+## 1  3 NA NA NA NA     3     0 Completed  NA  NA  NA  NA  NA  NA  NA  NA
+## 2  5 NA NA NA NA     3     0 Completed  NA  NA  NA  NA  NA  NA  NA  NA
+## 3  2 NA NA NA NA     3     0 Completed  NA  NA  NA  NA  NA  NA  NA  NA
+## 4  7  6  3  6  0     3     2 Completed  NA  NA  NA  NA  NA  NA  NA  NA
+## 5  4  0  6  6  4     3     2 Completed  NA  NA  NA  NA  NA  NA  NA  NA
+## 6  4 NA NA NA NA     3     0 Completed  NA  NA  NA  NA  NA  NA  NA  NA
+##   B365W B365L B.WW B.WL EXW EXL PSW PSL WPts LPts UBW UBL LBW LBL SJW SJL
+## 1    NA    NA   NA   NA  NA  NA  NA  NA   NA       NA  NA  NA  NA  NA  NA
+## 2    NA    NA   NA   NA  NA  NA  NA  NA   NA       NA  NA  NA  NA  NA  NA
+## 3    NA    NA   NA   NA  NA  NA  NA  NA   NA       NA  NA  NA  NA  NA  NA
+## 4    NA    NA   NA   NA  NA  NA  NA  NA   NA       NA  NA  NA  NA  NA  NA
+## 5    NA    NA   NA   NA  NA  NA  NA  NA   NA       NA  NA  NA  NA  NA  NA
+## 6    NA    NA   NA   NA  NA  NA  NA  NA   NA       NA  NA  NA  NA  NA  NA
+##   MaxW MaxL AvgW AvgL
+## 1   NA   NA   NA   NA
+## 2   NA   NA   NA   NA
+## 3   NA   NA   NA   NA
+## 4   NA   NA   NA   NA
+## 5   NA   NA   NA   NA
+## 6   NA   NA   NA   NA</code></pre>
 <p>Now, there are a lot of attributes that we do not really need. Let’s tidy up the data a little bit.</p>
 <p>We can select only the attributes that we plan on using:</p>
 <ul>
@@ -198,23 +224,26 @@ slamMatches %&gt;% slice(1:10)</code></pre>
 </ul>
 <pre class="r"><code>slamMatches &lt;- slamMatches %&gt;%
   select(Tournament, Date, Surface, Round, Winner, Loser, WRank, LRank, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets) 
-slamMatches %&gt;% slice(1:10)</code></pre>
-<pre><code>## # A tibble: 10 x 20
-##    Tournament  Date   Surface Round  Winner Loser  WRank LRank    W1    L1
-##    &lt;fct&gt;       &lt;fct&gt;  &lt;fct&gt;   &lt;fct&gt;  &lt;fct&gt;  &lt;fct&gt;  &lt;fct&gt; &lt;fct&gt; &lt;int&gt; &lt;int&gt;
-##  1 Australian… 17/01… Hard    1st R… Agass… Puert… 1     112       6     2
-##  2 Australian… 17/01… Hard    1st R… Alami… Manta… 35    107       6     4
-##  3 Australian… 17/01… Hard    1st R… Arazi… Alons… 41    111       6     3
-##  4 Australian… 17/01… Hard    1st R… Behre… Melig… 106   28        6     2
-##  5 Australian… 17/01… Hard    1st R… Bjork… Stolt… 76    81        6     7
-##  6 Australian… 17/01… Hard    1st R… Black… Gambi… 151   57        7     6
-##  7 Australian… 17/01… Hard    1st R… Clave… Hrbat… 39    22        3     6
-##  8 Australian… 17/01… Hard    1st R… Cleme… van L… 54    66        7     6
-##  9 Australian… 17/01… Hard    1st R… Corre… Sargs… 30    51        7     6
-## 10 Australian… 17/01… Hard    1st R… Dosed… Boutt… 64    155       7     6
-## # ... with 10 more variables: W2 &lt;int&gt;, L2 &lt;int&gt;, W3 &lt;int&gt;, L3 &lt;int&gt;,
-## #   W4 &lt;int&gt;, L4 &lt;int&gt;, W5 &lt;int&gt;, L5 &lt;int&gt;, Wsets &lt;int&gt;, Lsets &lt;int&gt;</code></pre>
-<p>Missing data can be a problem. So let’s handle this missing data before it messes up any calculations. - Some players do not have a ranking, so we must replace their ranking with 1000. We can check if LRank is N/A and replace with 0. To do this, we need to convert WRank and LRank to numeric typing. - Some matches did not play a specific set (Due to injuries, etc), so we must replace those set scores with 0. We can check W1-W5 and L1-L5 for N/A values and replace with 0.</p>
+head(slamMatches)</code></pre>
+<pre><code>##        Tournament       Date Surface     Round      Winner          Loser
+## 1 Australian Open 17/01/2000    Hard 1st Round   Agassi A.      Puerta M.
+## 2 Australian Open 17/01/2000    Hard 1st Round    Alami K.       Manta L.
+## 3 Australian Open 17/01/2000    Hard 1st Round    Arazi H.      Alonso J.
+## 4 Australian Open 17/01/2000    Hard 1st Round  Behrend T.    Meligeni F.
+## 5 Australian Open 17/01/2000    Hard 1st Round Bjorkman J. Stoltenberg J.
+## 6 Australian Open 17/01/2000    Hard 1st Round    Black W.   Gambill J.M.
+##   WRank LRank W1 L1 W2 L2 W3 L3 W4 L4 W5 L5 Wsets Lsets
+## 1     1   112  6  2  6  2  6  3 NA NA NA NA     3     0
+## 2    35   107  6  4  7  6  7  5 NA NA NA NA     3     0
+## 3    41   111  6  3  7  6  6  2 NA NA NA NA     3     0
+## 4   106    28  6  2  4  6  6  7  6  3  6  0     3     2
+## 5    76    81  6  7  6  4  6  4  0  6  6  4     3     2
+## 6   151    57  7  6  6  1  6  4 NA NA NA NA     3     0</code></pre>
+<p>Missing data can be a problem. So let’s handle this missing data before it messes up any calculations.</p>
+<ul>
+<li>Some players do not have a ranking, so we must replace their ranking with 1000. We can check if LRank is N/A and replace with 0. To do this, we need to convert WRank and LRank to numeric typing.</li>
+<li>Some matches did not play a specific set (Due to injuries, etc), so we must replace those set scores with 0. We can check W1-W5 and L1-L5 for N/A values and replace with 0.</li>
+</ul>
 <pre class="r"><code>slamMatches$WRank &lt;- as.numeric(slamMatches$WRank)
 slamMatches$LRank &lt;- as.numeric(slamMatches$LRank)
 slamMatches$LRank[is.na(slamMatches$LRank)] &lt;- as.factor(1000)
@@ -230,22 +259,21 @@ slamMatches$L4[is.na(slamMatches$L4)] &lt;- 0
 slamMatches$W5[is.na(slamMatches$W5)] &lt;- 0
 slamMatches$L5[is.na(slamMatches$L5)] &lt;- 0
 
-slamMatches %&gt;% slice(1:10)</code></pre>
-<pre><code>## # A tibble: 10 x 20
-##    Tournament  Date   Surface Round  Winner Loser  WRank LRank    W1    L1
-##    &lt;fct&gt;       &lt;fct&gt;  &lt;fct&gt;   &lt;fct&gt;  &lt;fct&gt;  &lt;fct&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-##  1 Australian… 17/01… Hard    1st R… Agass… Puer…   1.00  60.0  6.00  2.00
-##  2 Australian… 17/01… Hard    1st R… Alami… Mant… 293     39.0  6.00  4.00
-##  3 Australian… 17/01… Hard    1st R… Arazi… Alon… 351     57.0  6.00  3.00
-##  4 Australian… 17/01… Hard    1st R… Behre… Meli…  15.0  325    6.00  2.00
-##  5 Australian… 17/01… Hard    1st R… Bjork… Stol… 538    828    6.00  7.00
-##  6 Australian… 17/01… Hard    1st R… Black… Gamb…  75.0  639    7.00  6.00
-##  7 Australian… 17/01… Hard    1st R… Clave… Hrba… 332    256    3.00  6.00
-##  8 Australian… 17/01… Hard    1st R… Cleme… van … 451    719    7.00  6.00
-##  9 Australian… 17/01… Hard    1st R… Corre… Sarg… 241    576    7.00  6.00
-## 10 Australian… 17/01… Hard    1st R… Dosed… Bout… 502    172    7.00  6.00
-## # ... with 10 more variables: W2 &lt;dbl&gt;, L2 &lt;dbl&gt;, W3 &lt;dbl&gt;, L3 &lt;dbl&gt;,
-## #   W4 &lt;dbl&gt;, L4 &lt;dbl&gt;, W5 &lt;dbl&gt;, L5 &lt;dbl&gt;, Wsets &lt;int&gt;, Lsets &lt;int&gt;</code></pre>
+head(slamMatches)</code></pre>
+<pre><code>##        Tournament       Date Surface     Round      Winner          Loser
+## 1 Australian Open 17/01/2000    Hard 1st Round   Agassi A.      Puerta M.
+## 2 Australian Open 17/01/2000    Hard 1st Round    Alami K.       Manta L.
+## 3 Australian Open 17/01/2000    Hard 1st Round    Arazi H.      Alonso J.
+## 4 Australian Open 17/01/2000    Hard 1st Round  Behrend T.    Meligeni F.
+## 5 Australian Open 17/01/2000    Hard 1st Round Bjorkman J. Stoltenberg J.
+## 6 Australian Open 17/01/2000    Hard 1st Round    Black W.   Gambill J.M.
+##   WRank LRank W1 L1 W2 L2 W3 L3 W4 L4 W5 L5 Wsets Lsets
+## 1     1    60  6  2  6  2  6  3  0  0  0  0     3     0
+## 2   293    39  6  4  7  6  7  5  0  0  0  0     3     0
+## 3   351    57  6  3  7  6  6  2  0  0  0  0     3     0
+## 4    15   325  6  2  4  6  6  7  6  3  6  0     3     2
+## 5   538   828  6  7  6  4  6  4  0  6  6  4     3     2
+## 6    75   639  7  6  6  1  6  4  0  0  0  0     3     0</code></pre>
 <p>Now, there are a couple of attributes that could be useful but don’t yet exist in this data frame. Let’s see if we can add them.</p>
 <ul>
 <li>The first will be what we call a rank differential. It is the losing players rank minus the winning players rank. This attribute will be used to determine how big of an upset, rankwise, some matches are. The lower the value is in the negatives, the more of an upset the match was. The only problem is, that WRank and LRank are factors, so we must first convert them to the correct type.</li>
@@ -257,85 +285,150 @@ slamMatches %&gt;% slice(1:10)</code></pre>
   mutate(Wgames = W1 + W2 + W3 + W4 + W5) %&gt;%
   mutate(Lgames = L1 + L2 + L3 + L4 + L5) %&gt;%
   select(Tournament, Date, Surface, Round, Winner, Loser, WRank, LRank, Differential, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets, Wgames, Lgames) 
-slamMatches %&gt;% slice(1:10)</code></pre>
-<pre><code>## # A tibble: 10 x 23
-##    Tournament  Date   Surface Round Winner Loser  WRank LRank Differential
-##    &lt;fct&gt;       &lt;fct&gt;  &lt;fct&gt;   &lt;fct&gt; &lt;fct&gt;  &lt;fct&gt;  &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;
-##  1 Australian… 17/01… Hard    1st … Agass… Puer…   1.00  60.0         59.0
-##  2 Australian… 17/01… Hard    1st … Alami… Mant… 293     39.0       -254  
-##  3 Australian… 17/01… Hard    1st … Arazi… Alon… 351     57.0       -294  
-##  4 Australian… 17/01… Hard    1st … Behre… Meli…  15.0  325          310  
-##  5 Australian… 17/01… Hard    1st … Bjork… Stol… 538    828          290  
-##  6 Australian… 17/01… Hard    1st … Black… Gamb…  75.0  639          564  
-##  7 Australian… 17/01… Hard    1st … Clave… Hrba… 332    256         - 76.0
-##  8 Australian… 17/01… Hard    1st … Cleme… van … 451    719          268  
-##  9 Australian… 17/01… Hard    1st … Corre… Sarg… 241    576          335  
-## 10 Australian… 17/01… Hard    1st … Dosed… Bout… 502    172         -330  
-## # ... with 14 more variables: W1 &lt;dbl&gt;, L1 &lt;dbl&gt;, W2 &lt;dbl&gt;, L2 &lt;dbl&gt;,
-## #   W3 &lt;dbl&gt;, L3 &lt;dbl&gt;, W4 &lt;dbl&gt;, L4 &lt;dbl&gt;, W5 &lt;dbl&gt;, L5 &lt;dbl&gt;,
-## #   Wsets &lt;int&gt;, Lsets &lt;int&gt;, Wgames &lt;dbl&gt;, Lgames &lt;dbl&gt;</code></pre>
+head(slamMatches)</code></pre>
+<pre><code>##        Tournament       Date Surface     Round      Winner          Loser
+## 1 Australian Open 17/01/2000    Hard 1st Round   Agassi A.      Puerta M.
+## 2 Australian Open 17/01/2000    Hard 1st Round    Alami K.       Manta L.
+## 3 Australian Open 17/01/2000    Hard 1st Round    Arazi H.      Alonso J.
+## 4 Australian Open 17/01/2000    Hard 1st Round  Behrend T.    Meligeni F.
+## 5 Australian Open 17/01/2000    Hard 1st Round Bjorkman J. Stoltenberg J.
+## 6 Australian Open 17/01/2000    Hard 1st Round    Black W.   Gambill J.M.
+##   WRank LRank Differential W1 L1 W2 L2 W3 L3 W4 L4 W5 L5 Wsets Lsets
+## 1     1    60           59  6  2  6  2  6  3  0  0  0  0     3     0
+## 2   293    39         -254  6  4  7  6  7  5  0  0  0  0     3     0
+## 3   351    57         -294  6  3  7  6  6  2  0  0  0  0     3     0
+## 4    15   325          310  6  2  4  6  6  7  6  3  6  0     3     2
+## 5   538   828          290  6  7  6  4  6  4  0  6  6  4     3     2
+## 6    75   639          564  7  6  6  1  6  4  0  0  0  0     3     0
+##   Wgames Lgames
+## 1     18      7
+## 2     20     15
+## 3     19     11
+## 4     28     18
+## 5     24     25
+## 6     19     11</code></pre>
 <p>Now, let’s get the individual matches for each player we are interested in. We can use filter to grab all matches where Roger Federer, Rafael Nadal or Novak Djokovic was either the winner or loser, depending on which player the data frame is for. We will be using these three data frames for a lot of analysis to come.</p>
 <pre class="r"><code>rfMatches &lt;- slamMatches %&gt;%
   filter(Winner == &quot;Federer R.&quot; | Loser == &quot;Federer R.&quot;)
-rfMatches %&gt;% slice(1:10)</code></pre>
-<pre><code>## # A tibble: 10 x 23
-##    Tournament  Date   Surface Round Winner Loser  WRank LRank Differential
-##    &lt;fct&gt;       &lt;fct&gt;  &lt;fct&gt;   &lt;fct&gt; &lt;fct&gt;  &lt;fct&gt;  &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;
-##  1 Australian… 17/01… Hard    1st … Feder… Chan… 496    436         - 60.0
-##  2 Australian… 17/01… Hard    2nd … Feder… Kros… 496     23.0       -473  
-##  3 Australian… 17/01… Hard    3rd … Cleme… Fede… 451    686          235  
-##  4 French Open 29/05… Clay    1st … Feder… Arth… 451     33.0       -418  
-##  5 French Open 29/05… Clay    2nd … Feder… Gamb… 451    744          293  
-##  6 French Open 29/05… Clay    3rd … Feder… Krat… 451     86.0       -365  
-##  7 French Open 29/05… Clay    4th … Corre… Fede…   2.00 607          605  
-##  8 Wimbledon   26/06… Grass   1st … Kafel… Fede… 425    403         - 22.0
-##  9 US Open     28/08… Hard    1st … Feder… Wess… 342    874          532  
-## 10 US Open     28/08… Hard    2nd … Feder… Nest… 342    356           14.0
-## # ... with 14 more variables: W1 &lt;dbl&gt;, L1 &lt;dbl&gt;, W2 &lt;dbl&gt;, L2 &lt;dbl&gt;,
-## #   W3 &lt;dbl&gt;, L3 &lt;dbl&gt;, W4 &lt;dbl&gt;, L4 &lt;dbl&gt;, W5 &lt;dbl&gt;, L5 &lt;dbl&gt;,
-## #   Wsets &lt;int&gt;, Lsets &lt;int&gt;, Wgames &lt;dbl&gt;, Lgames &lt;dbl&gt;</code></pre>
+head(rfMatches)</code></pre>
+<pre><code>##        Tournament       Date Surface     Round     Winner         Loser
+## 1 Australian Open 17/01/2000    Hard 1st Round Federer R.      Chang M.
+## 2 Australian Open 17/01/2000    Hard 2nd Round Federer R.    Kroslak J.
+## 3 Australian Open 17/01/2000    Hard 3rd Round Clement A.    Federer R.
+## 4     French Open 29/05/2000    Clay 1st Round Federer R.    Arthurs W.
+## 5     French Open 29/05/2000    Clay 2nd Round Federer R.  Gambill J.M.
+## 6     French Open 29/05/2000    Clay 3rd Round Federer R. Kratochvil M.
+##   WRank LRank Differential W1 L1 W2 L2 W3 L3 W4 L4 W5 L5 Wsets Lsets
+## 1   496   436          -60  6  4  6  4  7  6  0  0  0  0     3     0
+## 2   496    23         -473  7  6  6  2  6  3  0  0  0  0     3     0
+## 3   451   686          235  6  1  6  4  6  3  0  0  0  0     3     0
+## 4   451    33         -418  7  6  6  3  1  6  6  3  0  0     3     1
+## 5   451   744          293  7  6  6  3  6  3  0  0  0  0     3     0
+## 6   451    86         -365  7  6  6  4  2  6  6  7  8  6     3     2
+##   Wgames Lgames
+## 1     19     14
+## 2     19     11
+## 3     18      8
+## 4     20     18
+## 5     19     12
+## 6     29     29</code></pre>
 <pre class="r"><code>rnMatches &lt;- slamMatches %&gt;%
   filter(Winner == &quot;Nadal R.&quot; | Loser == &quot;Nadal R.&quot;)
-rnMatches %&gt;% slice(1:10)</code></pre>
-<pre><code>## # A tibble: 10 x 23
-##    Tournament  Date   Surface Round  Winner Loser WRank LRank Differential
-##    &lt;fct&gt;       &lt;fct&gt;  &lt;fct&gt;   &lt;fct&gt;  &lt;fct&gt;  &lt;fct&gt; &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;
-##  1 Wimbledon   23/06… Grass   1st R… Nadal… Anci… 538     737        199  
-##  2 Wimbledon   25/06… Grass   2nd R… Nadal… Chil… 538     555         17.0
-##  3 Wimbledon   27/06… Grass   3rd R… Srich… Nada…  25.0   796        771  
-##  4 US Open     27/08… Hard    1st R… Nadal… Vice… 386     676        290  
-##  5 US Open     29/08… Hard    2nd R… El Ay… Nada… 142     514        372  
-##  6 Australian… 20/01… Hard    1st R… Nadal… Taba… 351     250       -101  
-##  7 Australian… 22/01… Hard    2nd R… Nadal… Asci… 351     865        514  
-##  8 Australian… 24/01… Hard    3rd R… Hewit… Nada…  25.0   470        445  
-##  9 US Open     1/09/… Hard    1st R… Nadal… Heub… 418     135       -283  
-## 10 US Open     4/09/… Hard    2nd R… Roddi… Nada… 130     556        426  
-## # ... with 14 more variables: W1 &lt;dbl&gt;, L1 &lt;dbl&gt;, W2 &lt;dbl&gt;, L2 &lt;dbl&gt;,
-## #   W3 &lt;dbl&gt;, L3 &lt;dbl&gt;, W4 &lt;dbl&gt;, L4 &lt;dbl&gt;, W5 &lt;dbl&gt;, L5 &lt;dbl&gt;,
-## #   Wsets &lt;int&gt;, Lsets &lt;int&gt;, Wgames &lt;dbl&gt;, Lgames &lt;dbl&gt;</code></pre>
+head(rnMatches)</code></pre>
+<pre><code>##        Tournament       Date Surface     Round        Winner      Loser
+## 1       Wimbledon 23/06/2003   Grass 1st Round      Nadal R.   Ancic M.
+## 2       Wimbledon 25/06/2003   Grass 2nd Round      Nadal R.  Childs L.
+## 3       Wimbledon 27/06/2003   Grass 3rd Round Srichaphan P.   Nadal R.
+## 4         US Open 27/08/2003    Hard 1st Round      Nadal R. Vicente F.
+## 5         US Open 29/08/2003    Hard 2nd Round El Aynaoui Y.   Nadal R.
+## 6 Australian Open 20/01/2004    Hard 1st Round      Nadal R.  Tabara M.
+##   WRank LRank Differential W1 L1 W2 L2 W3 L3 W4 L4 W5 L5 Wsets Lsets
+## 1   538   737          199  6  3  6  4  4  6  6  4  0  0     3     1
+## 2   538   555           17  6  2  6  4  6  3  0  0  0  0     3     0
+## 3    25   796          771  6  4  6  4  6  2  0  0  0  0     3     0
+## 4   386   676          290  6  4  6  3  6  3  0  0  0  0     3     0
+## 5   142   514          372  7  6  6  3  7  6  0  0  0  0     3     0
+## 6   351   250         -101  6  1  6  2  6  2  0  0  0  0     3     0
+##   Wgames Lgames
+## 1     22     17
+## 2     18      9
+## 3     18     10
+## 4     18     10
+## 5     20     15
+## 6     18      5</code></pre>
 <pre class="r"><code>ndMatches &lt;- slamMatches %&gt;%
   filter(Winner == &quot;Djokovic N.&quot; | Loser == &quot;Djokovic N.&quot;)
-ndMatches %&gt;% slice(1:10)</code></pre>
-<pre><code>## # A tibble: 10 x 23
-##    Tournament  Date   Surface Round Winner Loser  WRank LRank Differential
-##    &lt;fct&gt;       &lt;fct&gt;  &lt;fct&gt;   &lt;fct&gt; &lt;fct&gt;  &lt;fct&gt;  &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;
-##  1 Australian… 17/01… Hard    1st … Safin… Djoko… 341     217       -124  
-##  2 French Open 24/05… Clay    1st … Djoko… Ginep…  77.0   759        682  
-##  3 French Open 26/05… Clay    2nd … Coria… Djoko… 570     168       -402  
-##  4 Wimbledon   21/06… Grass   1st … Djoko… Monac…  49.0   737        688  
-##  5 Wimbledon   23/06… Grass   2nd … Djoko… Garci…  49.0   828        779  
-##  6 Wimbledon   25/06… Grass   3rd … Grosj… Djoko… 208     106       -102  
-##  7 US Open     30/08… Hard    1st … Djoko… Monfi… 582     492       - 90.0
-##  8 US Open     2/09/… Hard    2nd … Djoko… Ancic… 582     280       -302  
-##  9 US Open     4/09/… Hard    3rd … Verda… Djoko… 407     918        511  
-## 10 Australian… 17/01… Hard    1st … Golds… Djoko… 518     796        278  
-## # ... with 14 more variables: W1 &lt;dbl&gt;, L1 &lt;dbl&gt;, W2 &lt;dbl&gt;, L2 &lt;dbl&gt;,
-## #   W3 &lt;dbl&gt;, L3 &lt;dbl&gt;, W4 &lt;dbl&gt;, L4 &lt;dbl&gt;, W5 &lt;dbl&gt;, L5 &lt;dbl&gt;,
-## #   Wsets &lt;int&gt;, Lsets &lt;int&gt;, Wgames &lt;dbl&gt;, Lgames &lt;dbl&gt;</code></pre>
+head(ndMatches)</code></pre>
+<pre><code>##        Tournament       Date Surface     Round      Winner           Loser
+## 1 Australian Open 17/01/2005    Hard 1st Round    Safin M.     Djokovic N.
+## 2     French Open 24/05/2005    Clay 1st Round Djokovic N.      Ginepri R.
+## 3     French Open 26/05/2005    Clay 2nd Round    Coria G.     Djokovic N.
+## 4       Wimbledon 21/06/2005   Grass 1st Round Djokovic N.       Monaco J.
+## 5       Wimbledon 23/06/2005   Grass 2nd Round Djokovic N. Garcia-Lopez G.
+## 6       Wimbledon 25/06/2005   Grass 3rd Round Grosjean S.     Djokovic N.
+##   WRank LRank Differential W1 L1 W2 L2 W3 L3 W4 L4 W5 L5 Wsets Lsets
+## 1   341   217         -124  6  0  6  2  6  1  0  0  0  0     3     0
+## 2    77   759          682  6  0  6  0  6  3  0  0  0  0     3     0
+## 3   570   168         -402  4  6  6  2  3  2  0  0  0  0     1     1
+## 4    49   737          688  6  3  7  6  6  3  0  0  0  0     3     0
+## 5    49   828          779  3  6  3  6  7  6  7  6  6  4     3     2
+## 6   208   106         -102  7  5  6  4  5  7  6  4  0  0     3     1
+##   Wgames Lgames
+## 1     18      3
+## 2     18      3
+## 3     13     10
+## 4     19     12
+## 5     26     28
+## 6     24     20</code></pre>
 </div>
 <div id="exploratory-data-analysis" class="section level3">
 <h3>Exploratory Data Analysis</h3>
-<p>Posible things to do: - Analyze top 20 wins - Analyze top 10 wins - Analyze top 20/10 wins by surface - Analyze wins in quarterfinals and above - Analyze wins in finals - Analyze biggest upsets</p>
+<p>Now that we have our data properly prepared. Let’s analyze it.</p>
+<p>The main cornerstone of being an all time great, is being able to consistently beat top ranked players at the biggest tournaments. So, let’s look at how each of our all time greats perform against top 20 ranked players.</p>
+<pre class="r"><code>rfTop20 &lt;- rfMatches %&gt;%
+  filter(Winner == &quot;Federer R.&quot;) %&gt;%
+  filter(LRank &lt;= 20)
+rfTop20</code></pre>
+<pre><code>##        Tournament       Date Surface         Round     Winner       Loser
+## 1       Wimbledon 30/06/2004   Grass Quarterfinals Federer R.   Hewitt L.
+## 2       Wimbledon  5/07/2006   Grass Quarterfinals Federer R.    Ancic M.
+## 3         US Open 10/09/2006    Hard     The Final Federer R.  Roddick A.
+## 4       Wimbledon  2/07/2007   Grass     4th Round Federer R.     Haas T.
+## 5     French Open  3/06/2009    Clay Quarterfinals Federer R.  Monfils G.
+## 6 Australian Open 29/01/2010    Hard    Semifinals Federer R. Tsonga J.W.
+## 7       Wimbledon  6/07/2012   Grass    Semifinals Federer R. Djokovic N.
+## 8 Australian Open 20/01/2014    Hard     4th Round Federer R. Tsonga J.W.
+## 9       Wimbledon 26/06/2014   Grass     2nd Round Federer R.   Muller G.
+##   WRank LRank Differential W1 L1 W2 L2 W3 L3 W4 L4 W5 L5 Wsets Lsets
+## 1     1     2            1  6  1  6  7  6  0  6  4  0  0     3     1
+## 2     1     2            1  6  4  6  4  6  4  0  0  0  0     3     0
+## 3     1     2            1  6  2  4  6  7  5  6  1  0  0     3     1
+## 4     1     2            1  0  0  0  0  0  0  0  0  0  0     0     0
+## 5   130     2         -128  7  6  6  2  6  4  0  0  0  0     3     0
+## 6     1     2            1  6  2  6  3  6  2  0  0  0  0     3     0
+## 7   240     1         -239  6  3  3  6  6  4  6  3  0  0     3     1
+## 8   488     2         -486  6  3  7  5  6  4  0  0  0  0     3     0
+## 9   341    19         -322  6  3  7  5  6  3  0  0  0  0     3     0
+##   Wgames Lgames
+## 1     24     12
+## 2     18     12
+## 3     23     14
+## 4      0      0
+## 5     19     12
+## 6     18      7
+## 7     21     16
+## 8     19     12
+## 9     19     11</code></pre>
+<p>Posible things to do:</p>
+<ul>
+<li>Analyze top 20 wins</li>
+<li>Analyze top 10 wins</li>
+<li>Analyze top 20/10 wins by surface</li>
+<li>Analyze wins in quarterfinals and above</li>
+<li>Analyze wins in finals</li>
+<li>Analyze biggest upsets</li>
+<li>Analyze dominant performances</li>
+</ul>
 </div>
 <div id="hypothesis-testing-machine-learning" class="section level3">
 <h3>Hypothesis Testing &amp; Machine Learning</h3>
