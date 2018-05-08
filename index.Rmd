@@ -63,52 +63,14 @@ djokovicMatches <- slamMatches %>%
 djokovicMatches %>% slice(1:10)
 ```
 
-My pipeline grabs the first 10 best of 5 that Roger Federer has won and started very strong (Lopsided score in the first set).
-I think this is useful because it shows me which players may be either slow starters against Federer or simply good matchups for Federer
+```{r}
 
-Here is the step by step process:
-
-First I grab all best of 5 by filtering out matches that are best of 3 (I can do this by simply checking whether best.of is greater than three, because the value will either be 3 or 5). 
-
-Then I filter out all matches that do not have federer as the winner.
-
-Now, I only want to display the attributes: Tournament, Date, Winner, Loser, W1, L1, W2, L2, W3, L3, W4, L4, W5 and L5 because I want to know only basic information about the matches, like the winner, loser and set scores, so I selected only those attributes to display. 
-
-Now I sort by Loser's score in increasing order, so the lowest first set loser's score will be first.
-
-Now I rename the Winner category to Federer, since we know it will be him as the winner.
-
-Now I used the slice operation to take the first 10 entities only, allowing me to get the most lopsided first set scores
-
-```{r pipeline}
-fedMatches <- tennis %>%
-  filter(Best.of > 3) %>%
-  filter(Winner == "Federer R.") %>%
-  select(Tournament, Date, Winner, Loser, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5) %>%
-  arrange(L1) %>%
-  rename(Federer=Winner) %>%
-  slice(1:10)
-fedMatches
 ```
 
 
 ### Data Management
 
 ### Exploratory Data Analysis
-
-1) This plot shows the Federer's score in set 2 in relation to the loser's score in set 2
-
-Why did I use this plot? Because I wanted to see if the score of the second set improves from the first set score, which means that the opponent stepped up their game from the first set.
-
-NOTE: Because of the nature of my pipeline, I already know that Federer was able to beat the loser either 6-0 or 6-1 in the first set.
-
-As seen in the plot, the minimum number of games in the second set is 3, so after losing the first set 6-0 or 6-1, every single opponent raised their game to lose the second set at least 6-3 or higher. The plot however shows that nobody on the list was able to win the second set however, which can be seen since Federer's set 2 score is always higher than the loser's set 2 score.
-
-```{r plot}
-fedMatches %>%
-  ggplot(mapping=aes(x=W2, y=L2)) +
-    geom_point()
-```
 
 ### Hypothesis Testing
 
