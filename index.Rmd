@@ -8,7 +8,7 @@ output:
 knitr::opts_chunk$set(cache=TRUE)
 ```
 
-### Downloading The Data
+### Data Curation
 
 ```{r load_data, message=FALSE}
 library(tidyverse)
@@ -17,9 +17,7 @@ tennis <- read.csv("/Users/Devin/Documents/Data.csv")
 tennis %>% slice(1:10)
 ```
 
-
-
-## Wrangling
+### Data Parsing
 
 1) My pipeline grabs the first 10 best of 5 that Roger Federer has won and started very strong (Lopsided score in the first set).
 I think this is useful because it shows me which players may be either slow starters against Federer or simply good matchups for Federer
@@ -52,8 +50,9 @@ fedMatches
 ```
 
 
+### Data Management
 
-## Plotting
+### Exploratory Data Analysis
 
 1) This plot shows the Federer's score in set 2 in relation to the loser's score in set 2
 
@@ -68,3 +67,9 @@ fedMatches %>%
   ggplot(mapping=aes(x=W2, y=L2)) +
     geom_point()
 ```
+
+### Hypothesis Testing
+
+### Machine Learning
+
+### Message
