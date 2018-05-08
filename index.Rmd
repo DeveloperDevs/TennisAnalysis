@@ -165,44 +165,19 @@ ggplot(top20, mapping = aes(x=Year, y=top20Wins)) +
   
 ```
 
-We can also do the same for top 10 wins:
+Let's analyze this plot:
+
+- We notice that
+
 
 ```{r}
-rfTop10 <- rfMatches %>%
-  filter(Winner == "Federer R.") %>%
-  filter(LRank <= 10) %>%
-  group_by(Year) %>%
-  summarize(top10Wins = n()) %>%
-  mutate(Player = "Federer")
 
-rnTop10 <- rnMatches %>%
-  filter(Winner == "Nadal R.") %>%
-  filter(LRank <= 10) %>%
-  group_by(Year) %>%
-  summarize(top10Wins = n()) %>%
-  mutate(Player = "Nadal")
-
-ndTop10 <- ndMatches %>%
-  filter(Winner == "Djokovic N.") %>%
-  filter(LRank <= 10) %>%
-  group_by(Year) %>%
-  summarize(top10Wins = n()) %>%
-  mutate(Player = "Djokovic")
-
-top10 <- rbind(rfTop10, rnTop10, ndTop10)
-  
-ggplot(top10, mapping = aes(x=Year, y=top10Wins)) + 
-  geom_bar(aes(fill = Player), position = "dodge", stat="identity") + 
-  ggtitle("Top 10 Wins Per Year") + 
-  ylab("Top 10 Wins") + xlab("Year") +
-  scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00"))
   
 ```
 
 Posible things to do:
 
-- Analyze top 10 wins
-- Analyze top 20/10 wins by surface
+- Analyze top 20 wins by surface
 - Analyze wins in quarterfinals and above
 - Analyze wins in finals
 - Average rank of players faced by year
