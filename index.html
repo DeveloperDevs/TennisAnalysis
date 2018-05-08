@@ -132,8 +132,8 @@ $(document).ready(function () {
 <p>One of the biggest contributors to the GOAT (Greatest of All Time) status are Grand Slam tournaments. There are four Grand Slam tournaments each year. These four tournaments, are the most prestigious tournaments in tennis and winning the trophy at one of these four tournaments is considered a great legacy. In the last 12 years, there were only 7 different grand slam champions. Roger Federer, Rafael Nadal and Novak Djokovic have held a sustained period of dominance over grand slams, winning a combined 48 out of the last 59 slams. (Federer winning 20, Nadal winning 16, Djokovic winning 12)</p>
 <p>This tutorial will take you through the entire data science pipeline, as we explore the performance of these three all time greats in the grand slam tournaments that they’ve participated in throughout their careers.</p>
 </div>
-<div id="data-curation" class="section level3">
-<h3>Data Curation</h3>
+<div id="gather-and-tidying-the-data" class="section level3">
+<h3>Gather and Tidying The Data</h3>
 <p>First we need to gather data for all grand slam tournaments. We can find all ATP Men’s matches from 2000 to 2016 at this link: <a href="https://www.kaggle.com/jordangoblet/atp-tour-20002016" class="uri">https://www.kaggle.com/jordangoblet/atp-tour-20002016</a></p>
 <p>For Tennis Fans: It is important to note that Federer and Nadal have won a combined total of 5 grand slams in 2017 and 2018. This data will be missing and not be included in the study due to the statistics not being released by the ATP world tour.</p>
 <p>As you can see below, we have loaded the data.</p>
@@ -161,10 +161,8 @@ tennis %&gt;% slice(1:10)</code></pre>
 ## #   PSL &lt;dbl&gt;, WPts &lt;int&gt;, LPts &lt;fct&gt;, UBW &lt;dbl&gt;, UBL &lt;dbl&gt;, LBW &lt;dbl&gt;,
 ## #   LBL &lt;dbl&gt;, SJW &lt;dbl&gt;, SJL &lt;dbl&gt;, MaxW &lt;dbl&gt;, MaxL &lt;dbl&gt;, AvgW &lt;dbl&gt;,
 ## #   AvgL &lt;dbl&gt;</code></pre>
-</div>
-<div id="data-parsing" class="section level3">
-<h3>Data Parsing</h3>
-<p>First, since this tutorial only concerns grand slam matches, we can filter out all non grand slam matches. So, let’s put the matches into a pipeline and use filter to keep all matches with a Series attribute of “Grand Slam”</p>
+<p>First, since this tutorial only concerns grand slam matches, we can filter out all non grand slam matches.</p>
+<p>So first, let’s put the matches into a pipeline and use filter to keep all matches with a Series attribute of “Grand Slam”.</p>
 <pre class="r"><code>slamMatches &lt;- tennis %&gt;%
   filter(Series == &quot;Grand Slam&quot;) 
 slamMatches %&gt;% slice(1:10)</code></pre>
@@ -190,94 +188,157 @@ slamMatches %&gt;% slice(1:10)</code></pre>
 ## #   PSL &lt;dbl&gt;, WPts &lt;int&gt;, LPts &lt;fct&gt;, UBW &lt;dbl&gt;, UBL &lt;dbl&gt;, LBW &lt;dbl&gt;,
 ## #   LBL &lt;dbl&gt;, SJW &lt;dbl&gt;, SJL &lt;dbl&gt;, MaxW &lt;dbl&gt;, MaxL &lt;dbl&gt;, AvgW &lt;dbl&gt;,
 ## #   AvgL &lt;dbl&gt;</code></pre>
-<p>Now, let’s get the individual matches for each player we are interested in. We can use filter to grab all of Federer, Nadal and Djokovic’s wins. We are only interested in their wins for this tutorial.</p>
-<pre class="r"><code>federerMatches &lt;- slamMatches %&gt;%
-  filter(Winner == &quot;Federer R.&quot;)
-federerMatches %&gt;% slice(1:10)</code></pre>
-<pre><code>## # A tibble: 10 x 54
-##      ATP Location  Tournament   Date    Series Court Surface Round Best.of
-##    &lt;int&gt; &lt;fct&gt;     &lt;fct&gt;        &lt;fct&gt;   &lt;fct&gt;  &lt;fct&gt; &lt;fct&gt;   &lt;fct&gt;   &lt;int&gt;
-##  1     6 Melbourne Australian … 17/01/… Grand… Outd… Hard    1st …       5
-##  2     6 Melbourne Australian … 17/01/… Grand… Outd… Hard    2nd …       5
-##  3    32 Paris     French Open  29/05/… Grand… Outd… Clay    1st …       5
-##  4    32 Paris     French Open  29/05/… Grand… Outd… Clay    2nd …       5
-##  5    32 Paris     French Open  29/05/… Grand… Outd… Clay    3rd …       5
-##  6    52 New York  US Open      28/08/… Grand… Outd… Hard    1st …       5
-##  7    52 New York  US Open      28/08/… Grand… Outd… Hard    2nd …       5
-##  8     6 Melbourne Australian … 15/01/… Grand… Outd… Hard    1st …       5
-##  9     6 Melbourne Australian … 15/01/… Grand… Outd… Hard    2nd …       5
-## 10    33 Paris     French Open  28/05/… Grand… Outd… Clay    1st …       5
-## # ... with 45 more variables: Winner &lt;fct&gt;, Loser &lt;fct&gt;, WRank &lt;fct&gt;,
-## #   LRank &lt;fct&gt;, W1 &lt;int&gt;, L1 &lt;int&gt;, W2 &lt;int&gt;, L2 &lt;int&gt;, W3 &lt;int&gt;,
-## #   L3 &lt;int&gt;, W4 &lt;int&gt;, L4 &lt;int&gt;, W5 &lt;int&gt;, L5 &lt;int&gt;, Wsets &lt;int&gt;,
-## #   Lsets &lt;int&gt;, Comment &lt;fct&gt;, CBW &lt;dbl&gt;, CBL &lt;dbl&gt;, GBW &lt;dbl&gt;,
-## #   GBL &lt;dbl&gt;, IWW &lt;dbl&gt;, IWL &lt;dbl&gt;, SBW &lt;dbl&gt;, SBL &lt;dbl&gt;, B365W &lt;dbl&gt;,
-## #   B365L &lt;dbl&gt;, B.WW &lt;dbl&gt;, B.WL &lt;dbl&gt;, EXW &lt;dbl&gt;, EXL &lt;dbl&gt;, PSW &lt;dbl&gt;,
-## #   PSL &lt;dbl&gt;, WPts &lt;int&gt;, LPts &lt;fct&gt;, UBW &lt;dbl&gt;, UBL &lt;dbl&gt;, LBW &lt;dbl&gt;,
-## #   LBL &lt;dbl&gt;, SJW &lt;dbl&gt;, SJL &lt;dbl&gt;, MaxW &lt;dbl&gt;, MaxL &lt;dbl&gt;, AvgW &lt;dbl&gt;,
-## #   AvgL &lt;dbl&gt;</code></pre>
-<pre class="r"><code>nadalMatches &lt;- slamMatches %&gt;%
-  filter(Winner == &quot;Nadal R.&quot;)
-nadalMatches %&gt;% slice(1:10)</code></pre>
-<pre><code>## # A tibble: 10 x 54
-##      ATP Location  Tournament   Date    Series Court Surface Round Best.of
-##    &lt;int&gt; &lt;fct&gt;     &lt;fct&gt;        &lt;fct&gt;   &lt;fct&gt;  &lt;fct&gt; &lt;fct&gt;   &lt;fct&gt;   &lt;int&gt;
-##  1    36 London    Wimbledon    23/06/… Grand… Outd… Grass   1st …       5
-##  2    36 London    Wimbledon    25/06/… Grand… Outd… Grass   2nd …       5
-##  3    51 New York  US Open      27/08/… Grand… Outd… Hard    1st …       5
-##  4     6 Melbourne Australian … 20/01/… Grand… Outd… Hard    1st …       5
-##  5     6 Melbourne Australian … 22/01/… Grand… Outd… Hard    2nd …       5
-##  6    50 New York  US Open      1/09/2… Grand… Outd… Hard    1st …       5
-##  7     6 Melbourne Australian … 18/01/… Grand… Outd… Hard    1st …       5
-##  8     6 Melbourne Australian … 20/01/… Grand… Outd… Hard    2nd …       5
-##  9     6 Melbourne Australian … 22/01/… Grand… Outd… Hard    3rd …       5
-## 10    31 Paris     French Open  23/05/… Grand… Outd… Clay    1st …       5
-## # ... with 45 more variables: Winner &lt;fct&gt;, Loser &lt;fct&gt;, WRank &lt;fct&gt;,
-## #   LRank &lt;fct&gt;, W1 &lt;int&gt;, L1 &lt;int&gt;, W2 &lt;int&gt;, L2 &lt;int&gt;, W3 &lt;int&gt;,
-## #   L3 &lt;int&gt;, W4 &lt;int&gt;, L4 &lt;int&gt;, W5 &lt;int&gt;, L5 &lt;int&gt;, Wsets &lt;int&gt;,
-## #   Lsets &lt;int&gt;, Comment &lt;fct&gt;, CBW &lt;dbl&gt;, CBL &lt;dbl&gt;, GBW &lt;dbl&gt;,
-## #   GBL &lt;dbl&gt;, IWW &lt;dbl&gt;, IWL &lt;dbl&gt;, SBW &lt;dbl&gt;, SBL &lt;dbl&gt;, B365W &lt;dbl&gt;,
-## #   B365L &lt;dbl&gt;, B.WW &lt;dbl&gt;, B.WL &lt;dbl&gt;, EXW &lt;dbl&gt;, EXL &lt;dbl&gt;, PSW &lt;dbl&gt;,
-## #   PSL &lt;dbl&gt;, WPts &lt;int&gt;, LPts &lt;fct&gt;, UBW &lt;dbl&gt;, UBL &lt;dbl&gt;, LBW &lt;dbl&gt;,
-## #   LBL &lt;dbl&gt;, SJW &lt;dbl&gt;, SJL &lt;dbl&gt;, MaxW &lt;dbl&gt;, MaxL &lt;dbl&gt;, AvgW &lt;dbl&gt;,
-## #   AvgL &lt;dbl&gt;</code></pre>
-<pre class="r"><code>djokovicMatches &lt;- slamMatches %&gt;%
-  filter(Winner == &quot;Djokovic N.&quot;)
-djokovicMatches %&gt;% slice(1:10)</code></pre>
-<pre><code>## # A tibble: 10 x 54
-##      ATP Location Tournament  Date    Series  Court Surface Round  Best.of
-##    &lt;int&gt; &lt;fct&gt;    &lt;fct&gt;       &lt;fct&gt;   &lt;fct&gt;   &lt;fct&gt; &lt;fct&gt;   &lt;fct&gt;    &lt;int&gt;
-##  1    31 Paris    French Open 24/05/… Grand … Outd… Clay    1st R…       5
-##  2    36 London   Wimbledon   21/06/… Grand … Outd… Grass   1st R…       5
-##  3    36 London   Wimbledon   23/06/… Grand … Outd… Grass   2nd R…       5
-##  4    51 New York US Open     30/08/… Grand … Outd… Hard    1st R…       5
-##  5    51 New York US Open     2/09/2… Grand … Outd… Hard    2nd R…       5
-##  6    31 Paris    French Open 30/05/… Grand … Outd… Clay    1st R…       5
-##  7    31 Paris    French Open 1/06/2… Grand … Outd… Clay    2nd R…       5
-##  8    31 Paris    French Open 3/06/2… Grand … Outd… Clay    3rd R…       5
-##  9    31 Paris    French Open 5/06/2… Grand … Outd… Clay    4th R…       5
-## 10    36 London   Wimbledon   27/06/… Grand … Outd… Grass   1st R…       5
-## # ... with 45 more variables: Winner &lt;fct&gt;, Loser &lt;fct&gt;, WRank &lt;fct&gt;,
-## #   LRank &lt;fct&gt;, W1 &lt;int&gt;, L1 &lt;int&gt;, W2 &lt;int&gt;, L2 &lt;int&gt;, W3 &lt;int&gt;,
-## #   L3 &lt;int&gt;, W4 &lt;int&gt;, L4 &lt;int&gt;, W5 &lt;int&gt;, L5 &lt;int&gt;, Wsets &lt;int&gt;,
-## #   Lsets &lt;int&gt;, Comment &lt;fct&gt;, CBW &lt;dbl&gt;, CBL &lt;dbl&gt;, GBW &lt;dbl&gt;,
-## #   GBL &lt;dbl&gt;, IWW &lt;dbl&gt;, IWL &lt;dbl&gt;, SBW &lt;dbl&gt;, SBL &lt;dbl&gt;, B365W &lt;dbl&gt;,
-## #   B365L &lt;dbl&gt;, B.WW &lt;dbl&gt;, B.WL &lt;dbl&gt;, EXW &lt;dbl&gt;, EXL &lt;dbl&gt;, PSW &lt;dbl&gt;,
-## #   PSL &lt;dbl&gt;, WPts &lt;int&gt;, LPts &lt;fct&gt;, UBW &lt;dbl&gt;, UBL &lt;dbl&gt;, LBW &lt;dbl&gt;,
-## #   LBL &lt;dbl&gt;, SJW &lt;dbl&gt;, SJL &lt;dbl&gt;, MaxW &lt;dbl&gt;, MaxL &lt;dbl&gt;, AvgW &lt;dbl&gt;,
-## #   AvgL &lt;dbl&gt;</code></pre>
-</div>
-<div id="data-management" class="section level3">
-<h3>Data Management</h3>
+<p>Now, there are a lot of attributes that we do not really need. Let’s tidy up the data a little bit.</p>
+<p>We can select only the attributes that we plan on using:</p>
+<ul>
+<li>Since there are only 4 grand slams, we don’t need the location or series, just the tournament name.</li>
+<li>We do not need the court type because every single grand slam is outdoor, we only care about the surface for court conditions.</li>
+<li>We do not need best.of because every grand slam match is best of 5.</li>
+<li>Now, we need a few match attributes: Round, Winner, Loser, WRank, LRank, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets</li>
+</ul>
+<pre class="r"><code>slamMatches &lt;- slamMatches %&gt;%
+  select(Tournament, Date, Surface, Round, Winner, Loser, WRank, LRank, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets) 
+slamMatches %&gt;% slice(1:10)</code></pre>
+<pre><code>## # A tibble: 10 x 20
+##    Tournament  Date   Surface Round  Winner Loser  WRank LRank    W1    L1
+##    &lt;fct&gt;       &lt;fct&gt;  &lt;fct&gt;   &lt;fct&gt;  &lt;fct&gt;  &lt;fct&gt;  &lt;fct&gt; &lt;fct&gt; &lt;int&gt; &lt;int&gt;
+##  1 Australian… 17/01… Hard    1st R… Agass… Puert… 1     112       6     2
+##  2 Australian… 17/01… Hard    1st R… Alami… Manta… 35    107       6     4
+##  3 Australian… 17/01… Hard    1st R… Arazi… Alons… 41    111       6     3
+##  4 Australian… 17/01… Hard    1st R… Behre… Melig… 106   28        6     2
+##  5 Australian… 17/01… Hard    1st R… Bjork… Stolt… 76    81        6     7
+##  6 Australian… 17/01… Hard    1st R… Black… Gambi… 151   57        7     6
+##  7 Australian… 17/01… Hard    1st R… Clave… Hrbat… 39    22        3     6
+##  8 Australian… 17/01… Hard    1st R… Cleme… van L… 54    66        7     6
+##  9 Australian… 17/01… Hard    1st R… Corre… Sargs… 30    51        7     6
+## 10 Australian… 17/01… Hard    1st R… Dosed… Boutt… 64    155       7     6
+## # ... with 10 more variables: W2 &lt;int&gt;, L2 &lt;int&gt;, W3 &lt;int&gt;, L3 &lt;int&gt;,
+## #   W4 &lt;int&gt;, L4 &lt;int&gt;, W5 &lt;int&gt;, L5 &lt;int&gt;, Wsets &lt;int&gt;, Lsets &lt;int&gt;</code></pre>
+<p>Missing data can be a problem. So let’s handle this missing data before it messes up any calculations. - Some players do not have a ranking, so we must replace their ranking with 1000. We can check if LRank is N/A and replace with 0. To do this, we need to convert WRank and LRank to numeric typing. - Some matches did not play a specific set (Due to injuries, etc), so we must replace those set scores with 0. We can check W1-W5 and L1-L5 for N/A values and replace with 0.</p>
+<pre class="r"><code>slamMatches$WRank &lt;- as.numeric(slamMatches$WRank)
+slamMatches$LRank &lt;- as.numeric(slamMatches$LRank)
+slamMatches$LRank[is.na(slamMatches$LRank)] &lt;- as.factor(1000)
+
+slamMatches$W1[is.na(slamMatches$W1)] &lt;- 0
+slamMatches$L1[is.na(slamMatches$L1)] &lt;- 0
+slamMatches$W2[is.na(slamMatches$W2)] &lt;- 0
+slamMatches$L2[is.na(slamMatches$L2)] &lt;- 0
+slamMatches$W3[is.na(slamMatches$W3)] &lt;- 0
+slamMatches$L3[is.na(slamMatches$L3)] &lt;- 0
+slamMatches$W4[is.na(slamMatches$W4)] &lt;- 0
+slamMatches$L4[is.na(slamMatches$L4)] &lt;- 0
+slamMatches$W5[is.na(slamMatches$W5)] &lt;- 0
+slamMatches$L5[is.na(slamMatches$L5)] &lt;- 0
+
+slamMatches %&gt;% slice(1:10)</code></pre>
+<pre><code>## # A tibble: 10 x 20
+##    Tournament  Date   Surface Round  Winner Loser  WRank LRank    W1    L1
+##    &lt;fct&gt;       &lt;fct&gt;  &lt;fct&gt;   &lt;fct&gt;  &lt;fct&gt;  &lt;fct&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 Australian… 17/01… Hard    1st R… Agass… Puer…   1.00  60.0  6.00  2.00
+##  2 Australian… 17/01… Hard    1st R… Alami… Mant… 293     39.0  6.00  4.00
+##  3 Australian… 17/01… Hard    1st R… Arazi… Alon… 351     57.0  6.00  3.00
+##  4 Australian… 17/01… Hard    1st R… Behre… Meli…  15.0  325    6.00  2.00
+##  5 Australian… 17/01… Hard    1st R… Bjork… Stol… 538    828    6.00  7.00
+##  6 Australian… 17/01… Hard    1st R… Black… Gamb…  75.0  639    7.00  6.00
+##  7 Australian… 17/01… Hard    1st R… Clave… Hrba… 332    256    3.00  6.00
+##  8 Australian… 17/01… Hard    1st R… Cleme… van … 451    719    7.00  6.00
+##  9 Australian… 17/01… Hard    1st R… Corre… Sarg… 241    576    7.00  6.00
+## 10 Australian… 17/01… Hard    1st R… Dosed… Bout… 502    172    7.00  6.00
+## # ... with 10 more variables: W2 &lt;dbl&gt;, L2 &lt;dbl&gt;, W3 &lt;dbl&gt;, L3 &lt;dbl&gt;,
+## #   W4 &lt;dbl&gt;, L4 &lt;dbl&gt;, W5 &lt;dbl&gt;, L5 &lt;dbl&gt;, Wsets &lt;int&gt;, Lsets &lt;int&gt;</code></pre>
+<p>Now, there are a couple of attributes that could be useful but don’t yet exist in this data frame. Let’s see if we can add them.</p>
+<ul>
+<li>The first will be what we call a rank differential. It is the losing players rank minus the winning players rank. This attribute will be used to determine how big of an upset, rankwise, some matches are. The lower the value is in the negatives, the more of an upset the match was. The only problem is, that WRank and LRank are factors, so we must first convert them to the correct type.</li>
+<li>The second is the number of games won by the winner. We can calculate this by adding up the scores of W1-W5</li>
+<li>The third is the number of games won by the loser. We can calculate this by adding up the scores of L1-L5</li>
+</ul>
+<pre class="r"><code>slamMatches &lt;- slamMatches %&gt;%
+  mutate(Differential = LRank - WRank) %&gt;%
+  mutate(Wgames = W1 + W2 + W3 + W4 + W5) %&gt;%
+  mutate(Lgames = L1 + L2 + L3 + L4 + L5) %&gt;%
+  select(Tournament, Date, Surface, Round, Winner, Loser, WRank, LRank, Differential, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets, Wgames, Lgames) 
+slamMatches %&gt;% slice(1:10)</code></pre>
+<pre><code>## # A tibble: 10 x 23
+##    Tournament  Date   Surface Round Winner Loser  WRank LRank Differential
+##    &lt;fct&gt;       &lt;fct&gt;  &lt;fct&gt;   &lt;fct&gt; &lt;fct&gt;  &lt;fct&gt;  &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;
+##  1 Australian… 17/01… Hard    1st … Agass… Puer…   1.00  60.0         59.0
+##  2 Australian… 17/01… Hard    1st … Alami… Mant… 293     39.0       -254  
+##  3 Australian… 17/01… Hard    1st … Arazi… Alon… 351     57.0       -294  
+##  4 Australian… 17/01… Hard    1st … Behre… Meli…  15.0  325          310  
+##  5 Australian… 17/01… Hard    1st … Bjork… Stol… 538    828          290  
+##  6 Australian… 17/01… Hard    1st … Black… Gamb…  75.0  639          564  
+##  7 Australian… 17/01… Hard    1st … Clave… Hrba… 332    256         - 76.0
+##  8 Australian… 17/01… Hard    1st … Cleme… van … 451    719          268  
+##  9 Australian… 17/01… Hard    1st … Corre… Sarg… 241    576          335  
+## 10 Australian… 17/01… Hard    1st … Dosed… Bout… 502    172         -330  
+## # ... with 14 more variables: W1 &lt;dbl&gt;, L1 &lt;dbl&gt;, W2 &lt;dbl&gt;, L2 &lt;dbl&gt;,
+## #   W3 &lt;dbl&gt;, L3 &lt;dbl&gt;, W4 &lt;dbl&gt;, L4 &lt;dbl&gt;, W5 &lt;dbl&gt;, L5 &lt;dbl&gt;,
+## #   Wsets &lt;int&gt;, Lsets &lt;int&gt;, Wgames &lt;dbl&gt;, Lgames &lt;dbl&gt;</code></pre>
+<p>Now, let’s get the individual matches for each player we are interested in. We can use filter to grab all matches where Roger Federer, Rafael Nadal or Novak Djokovic was either the winner or loser, depending on which player the data frame is for. We will be using these three data frames for a lot of analysis to come.</p>
+<pre class="r"><code>rfMatches &lt;- slamMatches %&gt;%
+  filter(Winner == &quot;Federer R.&quot; | Loser == &quot;Federer R.&quot;)
+rfMatches %&gt;% slice(1:10)</code></pre>
+<pre><code>## # A tibble: 10 x 23
+##    Tournament  Date   Surface Round Winner Loser  WRank LRank Differential
+##    &lt;fct&gt;       &lt;fct&gt;  &lt;fct&gt;   &lt;fct&gt; &lt;fct&gt;  &lt;fct&gt;  &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;
+##  1 Australian… 17/01… Hard    1st … Feder… Chan… 496    436         - 60.0
+##  2 Australian… 17/01… Hard    2nd … Feder… Kros… 496     23.0       -473  
+##  3 Australian… 17/01… Hard    3rd … Cleme… Fede… 451    686          235  
+##  4 French Open 29/05… Clay    1st … Feder… Arth… 451     33.0       -418  
+##  5 French Open 29/05… Clay    2nd … Feder… Gamb… 451    744          293  
+##  6 French Open 29/05… Clay    3rd … Feder… Krat… 451     86.0       -365  
+##  7 French Open 29/05… Clay    4th … Corre… Fede…   2.00 607          605  
+##  8 Wimbledon   26/06… Grass   1st … Kafel… Fede… 425    403         - 22.0
+##  9 US Open     28/08… Hard    1st … Feder… Wess… 342    874          532  
+## 10 US Open     28/08… Hard    2nd … Feder… Nest… 342    356           14.0
+## # ... with 14 more variables: W1 &lt;dbl&gt;, L1 &lt;dbl&gt;, W2 &lt;dbl&gt;, L2 &lt;dbl&gt;,
+## #   W3 &lt;dbl&gt;, L3 &lt;dbl&gt;, W4 &lt;dbl&gt;, L4 &lt;dbl&gt;, W5 &lt;dbl&gt;, L5 &lt;dbl&gt;,
+## #   Wsets &lt;int&gt;, Lsets &lt;int&gt;, Wgames &lt;dbl&gt;, Lgames &lt;dbl&gt;</code></pre>
+<pre class="r"><code>rnMatches &lt;- slamMatches %&gt;%
+  filter(Winner == &quot;Nadal R.&quot; | Loser == &quot;Nadal R.&quot;)
+rnMatches %&gt;% slice(1:10)</code></pre>
+<pre><code>## # A tibble: 10 x 23
+##    Tournament  Date   Surface Round  Winner Loser WRank LRank Differential
+##    &lt;fct&gt;       &lt;fct&gt;  &lt;fct&gt;   &lt;fct&gt;  &lt;fct&gt;  &lt;fct&gt; &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;
+##  1 Wimbledon   23/06… Grass   1st R… Nadal… Anci… 538     737        199  
+##  2 Wimbledon   25/06… Grass   2nd R… Nadal… Chil… 538     555         17.0
+##  3 Wimbledon   27/06… Grass   3rd R… Srich… Nada…  25.0   796        771  
+##  4 US Open     27/08… Hard    1st R… Nadal… Vice… 386     676        290  
+##  5 US Open     29/08… Hard    2nd R… El Ay… Nada… 142     514        372  
+##  6 Australian… 20/01… Hard    1st R… Nadal… Taba… 351     250       -101  
+##  7 Australian… 22/01… Hard    2nd R… Nadal… Asci… 351     865        514  
+##  8 Australian… 24/01… Hard    3rd R… Hewit… Nada…  25.0   470        445  
+##  9 US Open     1/09/… Hard    1st R… Nadal… Heub… 418     135       -283  
+## 10 US Open     4/09/… Hard    2nd R… Roddi… Nada… 130     556        426  
+## # ... with 14 more variables: W1 &lt;dbl&gt;, L1 &lt;dbl&gt;, W2 &lt;dbl&gt;, L2 &lt;dbl&gt;,
+## #   W3 &lt;dbl&gt;, L3 &lt;dbl&gt;, W4 &lt;dbl&gt;, L4 &lt;dbl&gt;, W5 &lt;dbl&gt;, L5 &lt;dbl&gt;,
+## #   Wsets &lt;int&gt;, Lsets &lt;int&gt;, Wgames &lt;dbl&gt;, Lgames &lt;dbl&gt;</code></pre>
+<pre class="r"><code>ndMatches &lt;- slamMatches %&gt;%
+  filter(Winner == &quot;Djokovic N.&quot; | Loser == &quot;Djokovic N.&quot;)
+ndMatches %&gt;% slice(1:10)</code></pre>
+<pre><code>## # A tibble: 10 x 23
+##    Tournament  Date   Surface Round Winner Loser  WRank LRank Differential
+##    &lt;fct&gt;       &lt;fct&gt;  &lt;fct&gt;   &lt;fct&gt; &lt;fct&gt;  &lt;fct&gt;  &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;
+##  1 Australian… 17/01… Hard    1st … Safin… Djoko… 341     217       -124  
+##  2 French Open 24/05… Clay    1st … Djoko… Ginep…  77.0   759        682  
+##  3 French Open 26/05… Clay    2nd … Coria… Djoko… 570     168       -402  
+##  4 Wimbledon   21/06… Grass   1st … Djoko… Monac…  49.0   737        688  
+##  5 Wimbledon   23/06… Grass   2nd … Djoko… Garci…  49.0   828        779  
+##  6 Wimbledon   25/06… Grass   3rd … Grosj… Djoko… 208     106       -102  
+##  7 US Open     30/08… Hard    1st … Djoko… Monfi… 582     492       - 90.0
+##  8 US Open     2/09/… Hard    2nd … Djoko… Ancic… 582     280       -302  
+##  9 US Open     4/09/… Hard    3rd … Verda… Djoko… 407     918        511  
+## 10 Australian… 17/01… Hard    1st … Golds… Djoko… 518     796        278  
+## # ... with 14 more variables: W1 &lt;dbl&gt;, L1 &lt;dbl&gt;, W2 &lt;dbl&gt;, L2 &lt;dbl&gt;,
+## #   W3 &lt;dbl&gt;, L3 &lt;dbl&gt;, W4 &lt;dbl&gt;, L4 &lt;dbl&gt;, W5 &lt;dbl&gt;, L5 &lt;dbl&gt;,
+## #   Wsets &lt;int&gt;, Lsets &lt;int&gt;, Wgames &lt;dbl&gt;, Lgames &lt;dbl&gt;</code></pre>
 </div>
 <div id="exploratory-data-analysis" class="section level3">
 <h3>Exploratory Data Analysis</h3>
+<p>Posible things to do: - Analyze top 20 wins - Analyze top 10 wins - Analyze top 20/10 wins by surface - Analyze wins in quarterfinals and above - Analyze wins in finals - Analyze biggest upsets</p>
 </div>
-<div id="hypothesis-testing" class="section level3">
-<h3>Hypothesis Testing</h3>
-</div>
-<div id="machine-learning" class="section level3">
-<h3>Machine Learning</h3>
+<div id="hypothesis-testing-machine-learning" class="section level3">
+<h3>Hypothesis Testing &amp; Machine Learning</h3>
 </div>
 <div id="message" class="section level3">
 <h3>Message</h3>

@@ -24,7 +24,7 @@ One of the biggest contributors to the GOAT (Greatest of All Time) status are Gr
 
 This tutorial will take you through the entire data science pipeline, as we explore the performance of these three all time greats in the grand slam tournaments that they've participated in throughout their careers.
 
-### Data Curation
+### Gather and Tidying The Data
 First we need to gather data for all grand slam tournaments. We can find all ATP Men's matches from 2000 to 2016 at this link:
 https://www.kaggle.com/jordangoblet/atp-tour-20002016
 
@@ -37,9 +37,9 @@ tennis <- read.csv("/Users/Devin/Documents/Data.csv")
 tennis %>% slice(1:10)
 ```
 
-### Data Parsing
 First, since this tutorial only concerns grand slam matches, we can filter out all non grand slam matches.
-So, let's put the matches into a pipeline and use filter to keep all matches with a Series attribute of "Grand Slam"
+
+So first, let's put the matches into a pipeline and use filter to keep all matches with a Series attribute of "Grand Slam".
 
 ```{r}
 slamMatches <- tennis %>%
@@ -47,33 +47,89 @@ slamMatches <- tennis %>%
 slamMatches %>% slice(1:10)
 ```
 
-Now, let's get the individual matches for each player we are interested in. We can use filter to grab all of Federer, Nadal and Djokovic's wins. We are only interested in their wins for this tutorial.
+Now, there are a lot of attributes that we do not really need. Let's tidy up the data a little bit.
+
+We can select only the attributes that we plan on using:
+
+- Since there are only 4 grand slams, we don't need the location or series, just the tournament name.
+- We do not need the court type because every single grand slam is outdoor, we only care about the surface for court conditions.
+- We do not need best.of because every grand slam match is best of 5.
+- Now, we need a few match attributes: Round, Winner, Loser, WRank, LRank, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets
 
 ```{r}
-federerMatches <- slamMatches %>%
-  filter(Winner == "Federer R.")
-federerMatches %>% slice(1:10)
-
-nadalMatches <- slamMatches %>%
-  filter(Winner == "Nadal R.")
-nadalMatches %>% slice(1:10)
-
-djokovicMatches <- slamMatches %>%
-  filter(Winner == "Djokovic N.")
-djokovicMatches %>% slice(1:10)
+slamMatches <- slamMatches %>%
+  select(Tournament, Date, Surface, Round, Winner, Loser, WRank, LRank, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets) 
+slamMatches %>% slice(1:10)
 ```
+
+Missing data can be a problem. So let's handle this missing data before it messes up any calculations.
+- Some players do not have a ranking, so we must replace their ranking with 1000. We can check if LRank is N/A and replace with 0. To do this, we need to convert WRank and LRank to numeric typing.
+- Some matches did not play a specific set (Due to injuries, etc), so we must replace those set scores with 0. We can check W1-W5 and L1-L5 for N/A values and replace with 0.
 
 ```{r}
+slamMatches$WRank <- as.numeric(slamMatches$WRank)
+slamMatches$LRank <- as.numeric(slamMatches$LRank)
+slamMatches$LRank[is.na(slamMatches$LRank)] <- as.factor(1000)
 
+slamMatches$W1[is.na(slamMatches$W1)] <- 0
+slamMatches$L1[is.na(slamMatches$L1)] <- 0
+slamMatches$W2[is.na(slamMatches$W2)] <- 0
+slamMatches$L2[is.na(slamMatches$L2)] <- 0
+slamMatches$W3[is.na(slamMatches$W3)] <- 0
+slamMatches$L3[is.na(slamMatches$L3)] <- 0
+slamMatches$W4[is.na(slamMatches$W4)] <- 0
+slamMatches$L4[is.na(slamMatches$L4)] <- 0
+slamMatches$W5[is.na(slamMatches$W5)] <- 0
+slamMatches$L5[is.na(slamMatches$L5)] <- 0
+
+slamMatches %>% slice(1:10)
 ```
 
+Now, there are a couple of attributes that could be useful but don't yet exist in this data frame. Let's see if we can add them.
 
-### Data Management
+- The first will be what we call a rank differential. It is the losing players rank minus the winning players rank. This attribute will be used to determine how big of an upset, rankwise, some matches are. The lower the value is in the negatives, the more of an upset the match was. The only problem is, that WRank and LRank are factors, so we must first convert them to the correct type.
+- The second is the number of games won by the winner. We can calculate this by adding up the scores of W1-W5
+- The third is the number of games won by the loser. We can calculate this by adding up the scores of L1-L5
+
+```{r, message=FALSE}
+slamMatches <- slamMatches %>%
+  mutate(Differential = LRank - WRank) %>%
+  mutate(Wgames = W1 + W2 + W3 + W4 + W5) %>%
+  mutate(Lgames = L1 + L2 + L3 + L4 + L5) %>%
+  select(Tournament, Date, Surface, Round, Winner, Loser, WRank, LRank, Differential, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets, Wgames, Lgames) 
+slamMatches %>% slice(1:10)
+```
+
+Now, let's get the individual matches for each player we are interested in. We can use filter to grab all matches where Roger Federer, Rafael Nadal or Novak Djokovic was either the winner or loser, depending on which player the data frame is for. We will be using these three data frames for a lot of analysis to come.
+
+```{r}
+rfMatches <- slamMatches %>%
+  filter(Winner == "Federer R." | Loser == "Federer R.")
+rfMatches %>% slice(1:10)
+
+rnMatches <- slamMatches %>%
+  filter(Winner == "Nadal R." | Loser == "Nadal R.")
+rnMatches %>% slice(1:10)
+
+ndMatches <- slamMatches %>%
+  filter(Winner == "Djokovic N." | Loser == "Djokovic N.")
+ndMatches %>% slice(1:10)
+```
 
 ### Exploratory Data Analysis
+Posible things to do:
+- Analyze top 20 wins
+- Analyze top 10 wins
+- Analyze top 20/10 wins by surface
+- Analyze wins in quarterfinals and above
+- Analyze wins in finals
+- Analyze biggest upsets
 
-### Hypothesis Testing
 
-### Machine Learning
+
+### Hypothesis Testing & Machine Learning
+
+
 
 ### Message
+
