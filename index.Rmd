@@ -134,6 +134,15 @@ After we have the groups, we can summarize these wins by using the n function to
 Then, we plot a bar graph that displays each player's Top 20 wins side by side.
 
 ```{r}
+rfMatches <- slamMatches %>%
+  filter(Winner == "Federer R." | Loser == "Federer R.")
+
+rnMatches <- slamMatches %>%
+  filter(Winner == "Nadal R." | Loser == "Nadal R.")
+
+ndMatches <- slamMatches %>%
+  filter(Winner == "Djokovic N." | Loser == "Djokovic N.")
+
 rfTop20 <- rfMatches %>%
   filter(Winner == "Federer R.") %>%
   filter(LRank <= 20) %>%
@@ -169,11 +178,6 @@ Let's analyze this plot:
 
 - We notice that
 
-
-```{r}
-
-  
-```
 
 Posible things to do:
 
