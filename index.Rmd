@@ -168,7 +168,7 @@ top20 <- rbind(rfTop20, rnTop20, ndTop20)
   
 ggplot(top20, mapping = aes(x=Year, y=top20Wins)) + 
   geom_bar(aes(fill = Player), position = "dodge", stat="identity") + 
-  ggtitle("Top 20 Wins Per Year") + 
+  ggtitle("Top 20 Wins in Grand Slams Per Year") + 
   ylab("Top 20 Wins") + xlab("Year") +
   scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00"))
   
@@ -176,17 +176,33 @@ ggplot(top20, mapping = aes(x=Year, y=top20Wins)) +
 
 Let's analyze this plot:
 
-- We notice that
+- Let's keep in mind that there are only 4 grand slams with 5 possible matchups against top 20 players per tournament (Earliest you can play a top 20 player is the 3rd round). This means a player can have at max 20 top 20 wins per year (IF they are lucky, since there is a very low chance you would play a top 20 player in the third round)
+- We notice that Federer has the season (2007) with the most top 20 wins of the three. This was in 2007 where he won 3 grand slams and made the final of the fourth
+- Despite Federer's great longevity (He has top 20 wins in more years than the other two), it is Novak with longer periods of dominance, with four years of 10+ top 20 wins in Grand Slams. 
+- Nadal does not have a single year where he beat 10 or more top 20 opponents in grand slams.
+
+One reason why Nadal failed to pass 10 top 20 wins in Grand Slams is because only one Grand Slam is on clay, which is Nadal's preferred surface. Let's analyze wins by surface.
+
+```{r}
+rfMatches <- slamMatches %>%
+  filter(Winner == "Federer R." | Loser == "Federer R.")
+
+rnMatches <- slamMatches %>%
+  filter(Winner == "Nadal R." | Loser == "Nadal R.")
+
+ndMatches <- slamMatches %>%
+  filter(Winner == "Djokovic N." | Loser == "Djokovic N.")
+```
 
 
 Posible things to do:
 
-- Analyze top 20 wins by surface
+- Analyze wins by surface (Bar Graph)
+- Average rank of players faced by year (Line Graph)
 - Analyze wins in quarterfinals and above
 - Analyze wins in finals
-- Average rank of players faced by year
-- Analyze biggest upsets
-- Analyze dominant performances
+- Analyze biggest upsets (Table)
+- Analyze dominant performances (Table)
 
 
 
