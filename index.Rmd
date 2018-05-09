@@ -121,7 +121,7 @@ So, to do this, we are going to take the data frame and filter out all losing pl
 
 After we have the groups, we can summarize these wins by using the n function to calculate the number of top 20 wins each player had for each season/group. Now, for each player we add a Player attribute to help us distinguish which player came from which data frame, and then we bind the three data frames together.
 
-Then, we plot a bar graph that displays each player's Top 20 wins side by side.
+Lastly, we plot a bar graph that displays each player's Top 20 wins side by side for each year.
 
 ```{r}
 rfTop20 <- rfMatches %>%
@@ -167,7 +167,7 @@ First, let's take the data frames and filter for all wins. We also will group by
 
 After we have the groups, we can summarize these wins by using the n function to calculate the wins per surface for each player. Now, for each player we add a Player attribute to help us distinguish which player came from which data frame, and then we bind the three data frames together.
 
-Then, we plot a bar graph that displays each player's surface wins side by side.
+Lastly, we plot a bar graph that displays each player's surface wins side by side.
 
 ```{r}
 rfSurface <- rfMatches %>%
@@ -214,6 +214,8 @@ First we need to filter out all tournaments with a series that is not "Grand Sla
 
 We can then summarize using the n function to get all wins per slam, and add a Player attribute to help us distinguish which player came from which data frame. Then, we bind the three data frames together.
 
+Lastly, we plot a bar graph that displays each player's grand slam wins side by side.
+
 ```{r}
 rfSlams <- rfMatches %>%
   filter(Winner == "Federer R.") %>%
@@ -256,6 +258,8 @@ So far we've only been looking at wins. However, every player has off days and e
 
 First we need to assign each match a value for whether or not it was a victory; 1 for win, 0 for loss. Then, we need to group by year. Then, we can use summarize to take the mean of the WonMatch attribute for each group in order to create the winPercentage for that year. We also can take the Season values in order to preserve the Year attribute after summary. Then, we add a Player attribute to help us distinguish which player came from which data frame. Then, we bind the three data frames together.
 
+Lastly, we plot a scatterplot that displays each player's win percentage, for each year.
+
 ```{r}
 rfFinals <- rfMatches %>%
   mutate(WonMatch = ifelse(Winner == "Federer R.", 1, 0)) %>%
@@ -297,11 +301,41 @@ Let's analyze this plot:
 - We can see that Federer's win percentage peaked in 2004-2006 and slowly moved downwards, likely due to Nadal (And then later Djokovic) rising through the ranks.
 - All three players had relatively low win percentages in the early stages of their career, except for Djokovic. This is because Djokovic was really young in 2004 and started his season towards the end of the year which did not give him many matches.
 
+Now let's see how the Win Percentages look if they are standardized.
 
+To standardize, we follow this formula:
+(winPercentage - meanWinPercentage) / sdPercentage
+
+So first, we need to find the mean and standard deviation of our win percentages. We can do this by using the summarize function and then assigning them to two variables.
+
+Next, we can use mutate to create the standardized win percentage, using the formula above.
+
+Then, we can plot a scatterplot of the standardized win percentages.
+
+```{r}
+newFinals <- finals %>%
+  summarize(MeanPercentage = mean(WinPercentage), sdPercentage = sd(WinPercentage))
+
+meanWinPercentage <-newFinals$MeanPercentage
+sdPercentage <- newFinals$sdPercentage
+
+standardized <- finals %>%
+  mutate(standardizedPercentage = (WinPercentage - meanWinPercentage)/sdPercentage)
+
+ggplot(standardized, mapping = aes(x=Season, y=standardizedPercentage)) + 
+  geom_point(aes(color = Player)) + 
+  ggtitle("Standardized Win Percentage Over Time") + 
+  ylab("Standardized Win Percentage") + xlab("Year") +
+  scale_color_manual(values=c("#999999", "#56B4E9", "#E69F00"))
+```
+
+Let's briefly analyze this plot:
+
+- Djokovic is the only player who has standardized win percentages below -2
+- Federer has three years where he had a standardized win percentage at 1 or above; In comparison, Djokovic only had one year, while Nadal did not break 1 in terms of standardized win percentages.
 
 ### To Do:
 
-- Analyze wins in finals
 - Analyze biggest upsets (Table)
 - Analyze dominant performances (Table)
 
