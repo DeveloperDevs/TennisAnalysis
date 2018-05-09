@@ -101,7 +101,7 @@ Now, let's get the individual matches for each player we are interested in. We c
 ```{r}
 rfMatches <- tennis %>%
   filter(Winner == "Federer R." | Loser == "Federer R.")
-rfMatches
+head(rfMatches)
 
 rnMatches <- tennis %>%
   filter(Winner == "Nadal R." | Loser == "Nadal R.")
@@ -192,7 +192,7 @@ surface <- rbind(rfSurface, rnSurface, ndSurface)
 
 ggplot(surface, mapping = aes(x=Surface, y=surfaceWins)) + 
   geom_bar(aes(fill = Player), position = "dodge", stat="identity") + 
-  ggtitle("Wins Per Surface") + 
+  ggtitle("Wins By Surface") + 
   ylab("Wins") + xlab("Surface") +
   scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00"))
 ```
@@ -285,7 +285,7 @@ finals <- rbind(rfFinals, rnFinals, ndFinals)
 
 ggplot(finals, mapping = aes(x=Season, y=WinPercentage)) + 
   geom_point(aes(color = Player)) + 
-  ggtitle("Win Percentage By Year") + 
+  ggtitle("Win Percentage Over Time") + 
   ylab("Win Percentage") + xlab("Year") +
   scale_color_manual(values=c("#999999", "#56B4E9", "#E69F00"))
 ```
@@ -296,6 +296,8 @@ Let's analyze this plot:
 - In comparison, Nadal only had 1 year with over a 0.9 win percentage
 - We can see that Federer's win percentage peaked in 2004-2006 and slowly moved downwards, likely due to Nadal (And then later Djokovic) rising through the ranks.
 - All three players had relatively low win percentages in the early stages of their career, except for Djokovic. This is because Djokovic was really young in 2004 and started his season towards the end of the year which did not give him many matches.
+
+
 
 ### To Do:
 
