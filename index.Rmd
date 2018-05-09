@@ -332,14 +332,43 @@ ggplot(standardized, mapping = aes(x=Season, y=standardizedPercentage)) +
 Let's briefly analyze this plot:
 
 - Djokovic is the only player who has standardized win percentages below -2
-- Federer has three years where he had a standardized win percentage at 1 or above; In comparison, Djokovic only had one year, while Nadal did not break 1 in terms of standardized win percentages.
+- Federer has three years where he had a standardized win percentage at 1 or above.
+- Djokovic only had one year with a standardized win percentage of 1.
+- Nadal did not break 1 in terms of standardized win percentages.
+- Federer is the only player to have a standardized win percentage greater than 1.
 
-### To Do:
+Based on these last few scatterplots, we can easily tell that Federer, Nadal and Djokovic in their primes did not lose very often. However, there are certain rare occasions where they get upset by a lower ranked player. Let's take a look at these upsets.
 
-- Analyze biggest upsets (Table)
-- Analyze dominant performances (Table)
+Remember the Match Differential attribute we created earlier? Well now we can finally use it. The match differential is a measure that determines how big of an upset the match was. For big upsets, let's look at all matches with a differential less than or equal to -100
 
+So let's take each data frame and use filter to get all matches where our player has lost a match with a differential less than or equal to -100. Then, lets bind all three data frames together.
 
+```{r}
+rfUpsets <- rfMatches %>%
+  filter(Loser == "Federer R.") %>%
+  filter(Differential <= -100)
+
+rnUpsets <- rnMatches %>%
+  filter(Loser == "Nadal R.") %>%
+  filter(Differential <= -100)
+
+ndUpsets <- ndMatches %>%
+  filter(Loser == "Djokovic N.") %>%
+  filter(Differential <= -100)
+
+upsets <- rbind(rfUpsets, rnUpsets, ndUpsets)
+upsets %>% select(Tournament, Year, Winner, Loser, Surface, Round, WRank, LRank, Differential)
+```
+
+Let's briefly analyze this table:
+
+- Djokovic seems to get upset the least, having only 4 big upsets, to Nadal's 8 and Federer's 6.
+- Nadal has the biggest upset, against Johansson, with a differential of -688, which is way lower than other differentials (The second lowest is -317, which was a match Djokovic lost against Krajinovic)
+
+Despite there being some bad losses above, in most cases, a match that involves Federer, Nadal or Djokovic is very quick and easy for them. Let's analyze their dominant performances.
+
+```{r}
+```
 
 ### Hypothesis Testing & Machine Learning
 

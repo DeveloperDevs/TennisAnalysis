@@ -546,13 +546,75 @@ ggplot(standardized, mapping = aes(x=Season, y=standardizedPercentage)) +
 <p>Let’s briefly analyze this plot:</p>
 <ul>
 <li>Djokovic is the only player who has standardized win percentages below -2</li>
-<li>Federer has three years where he had a standardized win percentage at 1 or above; In comparison, Djokovic only had one year, while Nadal did not break 1 in terms of standardized win percentages.</li>
+<li>Federer has three years where he had a standardized win percentage at 1 or above.</li>
+<li>Djokovic only had one year with a standardized win percentage of 1.</li>
+<li>Nadal did not break 1 in terms of standardized win percentages.</li>
+<li>Federer is the only player to have a standardized win percentage greater than 1.</li>
+</ul>
+<p>Based on these last few scatterplots, we can easily tell that Federer, Nadal and Djokovic in their primes did not lose very often. However, there are certain rare occasions where they get upset by a lower ranked player. Let’s take a look at these upsets.</p>
+<p>Remember the Match Differential attribute we created earlier? Well now we can finally use it. The match differential is a measure that determines how big of an upset the match was. For big upsets, let’s look at all matches with a differential less than or equal to -100</p>
+<p>So let’s take each data frame and use filter to get all matches where our player has lost a match with a differential less than or equal to -100. Then, lets bind all three data frames together.</p>
+<pre class="r"><code>rfUpsets &lt;- rfMatches %&gt;%
+  filter(Loser == &quot;Federer R.&quot;) %&gt;%
+  filter(Differential &lt;= -100)
+
+rnUpsets &lt;- rnMatches %&gt;%
+  filter(Loser == &quot;Nadal R.&quot;) %&gt;%
+  filter(Differential &lt;= -100)
+
+ndUpsets &lt;- ndMatches %&gt;%
+  filter(Loser == &quot;Djokovic N.&quot;) %&gt;%
+  filter(Differential &lt;= -100)
+
+upsets &lt;- rbind(rfUpsets, rnUpsets, ndUpsets)
+upsets %&gt;% select(Tournament, Year, Winner, Loser, Surface, Round, WRank, LRank, Differential)</code></pre>
+<pre><code>##                           Tournament Year           Winner       Loser
+## 1                     Open Seat Godo 2000      Bruguera S.  Federer R.
+## 2                  RCA Championships 2000       Sekulov J.  Federer R.
+## 3                          Wimbledon 2002         Ancic M.  Federer R.
+## 4                Monte Carlo Masters 2005       Gasquet R.  Federer R.
+## 5                          Wimbledon 2013    Stakhovsky S.  Federer R.
+## 6  German Open Tennis Championships  2013      Delbonis F.  Federer R.
+## 7                   Gerry Weber Open 2005         Waske A.    Nadal R.
+## 8                     Stockholm Open 2006     Johansson J.    Nadal R.
+## 9               Sydney International 2007      Guccione C.    Nadal R.
+## 10                     Stella Artois 2007         Mahut N.    Nadal R.
+## 11                         Wimbledon 2013        Darcis S.    Nadal R.
+## 12                         Wimbledon 2014       Kyrgios N.    Nadal R.
+## 13                     Swiss Indoors 2014         Coric B.    Nadal R.
+## 14            Qatar Exxon Mobil Open 2015        Berrer M.    Nadal R.
+## 15                    Open Seat Godo 2006 Gimeno-Traver D. Djokovic N.
+## 16                      Croatia Open 2007       Troicki V. Djokovic N.
+## 17                Sony Ericsson Open 2008      Anderson K. Djokovic N.
+## 18                       Serbia Open 2010    Krajinovic F. Djokovic N.
+##    Surface         Round WRank LRank Differential
+## 1     Clay     1st Round   249    51         -198
+## 2     Hard     1st Round   191    40         -151
+## 3    Grass     1st Round   154     9         -145
+## 4     Clay Quarterfinals   101     1         -100
+## 5    Grass     2nd Round   116     3         -113
+## 6     Clay    Semifinals   114     5         -109
+## 7    Grass     1st Round   147     3         -144
+## 8     Hard     2nd Round   690     2         -688
+## 9     Hard     1st Round   107     2         -105
+## 10   Grass Quarterfinals   106     2         -104
+## 11   Grass     1st Round   135     5         -130
+## 12   Grass     4th Round   144     1         -143
+## 13    Hard Quarterfinals   124     3         -121
+## 14    Hard     1st Round   127     3         -124
+## 15    Clay     1st Round   178    66         -112
+## 16    Clay     2nd Round   176     3         -173
+## 17    Hard     2nd Round   122     3         -119
+## 18    Clay Quarterfinals   319     2         -317</code></pre>
+<p>Let’s briefly analyze this table:</p>
+<ul>
+<li>Djokovic seems to get upset the least, having only 4 big upsets, to Nadal’s 8 and Federer’s 6.</li>
+<li>Nadal has the biggest upset, against Johansson, with a differential of -688, which is way lower than other differentials (The second lowest is -317, which was a match Djokovic lost against Krajinovic)</li>
 </ul>
 </div>
 <div id="to-do" class="section level3">
 <h3>To Do:</h3>
 <ul>
-<li>Analyze biggest upsets (Table)</li>
 <li>Analyze dominant performances (Table)</li>
 </ul>
 </div>
