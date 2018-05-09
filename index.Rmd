@@ -5,14 +5,14 @@ output:
   pdf_document: default
 ---
 ```{r knitr_setup, echo=FALSE, message=FALSE}
-knitr::opts_chunk$set(cache=TRUE)
+knitr::opts_chunk$set(cache=FALSE)
 library(tidyverse)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 ```
 
-## Tutorial: An Analysis of Roger Federer, Rafael Nadal and Novak Djokovic in Grand Slams
+## Tutorial: An Analysis of The Careers of Roger Federer, Rafael Nadal and Novak Djokovic
 
 ### Background
 Currently, tennis is experiencing the end of a "Golden Age". Right now, there are three all time greats competing at the highest stage; all while being at the closing door of their careers. These three are Roger Federer, Rafael Nadal and Novak Djokovic.
@@ -21,17 +21,15 @@ Roger Federer is widely considered the greatest of all time (GOAT). He has broke
 
 Rafael Nadal is considered the other main contender for greatest tennis player of all time status. He is considered the greatest clay court player of all time and joins Federer at the top of the rankings even today, at the age of 31
 
-Novak Djokovic is the youngest of the three, and after playing 3rd fiddle to Federer and Nadal, burst on to the scene in 2011 to take the crown at the top and completely dominate the tour at unprecedented levels from 2011 to 2016. Although he does not yet have the career accomplishments to equal Roger Federer or Rafael Nadal, he is considered a huge threat to his legacy. He is currently recovering from surgery at the moment, but could return into grand slam winning for soon.
+Novak Djokovic is the youngest of the three, and after playing 3rd fiddle to Federer and Nadal, burst on to the scene in 2011 to take the crown at the top and completely dominate the tour at unprecedented levels from 2011 to 2016. Although he does not yet have the career accomplishments to equal Roger Federer or Rafael Nadal, he is considered a huge threat to his legacy. He is currently recovering from surgery at the moment, but could return into grand slam winning form soon.
 
-One of the biggest contributors to the GOAT (Greatest of All Time) status are Grand Slam tournaments. There are four Grand Slam tournaments each year. These four tournaments, are the most prestigious tournaments in tennis and winning the trophy at one of these four tournaments is considered a great legacy. In the last 12 years, there were only 7 different grand slam champions. Roger Federer, Rafael Nadal and Novak Djokovic have held a sustained period of dominance over grand slams, winning a combined 48 out of the last 59 slams. (Federer winning 20, Nadal winning 16, Djokovic winning 12)
+This tutorial will take you through the entire data science pipeline, as we explore the performance of these three all time greats throughout their careers.
 
-This tutorial will take you through the entire data science pipeline, as we explore the performance of these three all time greats in the grand slam tournaments that they've participated in throughout their careers.
-
-### Gather and Tidying The Data
+### Gathering and Tidying The Data
 First we need to gather data for all grand slam tournaments. We can find all ATP Men's matches from 2000 to 2016 at this link:
 https://www.kaggle.com/jordangoblet/atp-tour-20002016
 
-For Tennis Fans: It is important to note that Federer and Nadal have won a combined total of 5 grand slams in 2017 and 2018. This data will be missing and not be included in the study due to the statistics not being released by the ATP world tour.
+For Tennis Fans: It is important to note that Federer and Nadal have won many many matches in 2017 and 2018 and are currently ranked number 1 and 2 right now. This data will be missing and not be included in the study due to the years not being covered in the dataset.
 
 As you can see below, we have loaded the data.
 
@@ -40,29 +38,21 @@ tennis <- read.csv("/Users/Devin/Documents/Data.csv")
 head(tennis)
 ```
 
-First, since this tutorial only concerns grand slam matches, we can filter out all non grand slam matches.
-
-So first, let's put the matches into a pipeline and use filter to keep all matches with a Series attribute of "Grand Slam".
-
-```{r}
-slamMatches <- tennis %>%
-  filter(Series == "Grand Slam") 
-head(slamMatches)
-```
-
 Now, there are a lot of attributes that we do not really need. Let's tidy up the data a little bit.
 
 We can select only the attributes that we plan on using:
 
-- Since there are only 4 grand slams, we don't need the location or series, just the tournament name.
-- We do not need the court type because every single grand slam is outdoor, we only care about the surface for court conditions.
-- We do not need best.of because every grand slam match is best of 5.
+- We do not need the location, since that informtion will not be necessary for this analysis since players pick and choose the tournaments they enter.
+- We do not need the court type because most courts are outdoor and this analysis will not cover whether or not the court is outdoor or indoor (because we have a lot of more important things to analyze)
+- We can safely get rid of a lot of the extra match stats like UBW, UBL, etc since those are match specific stats that aren't picked up for most tournaments.
 - Now, we need a few match attributes: Round, Winner, Loser, WRank, LRank, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets
+- I'm also going to rename Best.of to BestOf because I am OCD.
 
 ```{r}
-slamMatches <- slamMatches %>%
-  select(Tournament, Date, Surface, Round, Winner, Loser, WRank, LRank, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets) 
-head(slamMatches)
+tennis <- tennis %>%
+  select(Tournament, Date, Surface, Best.of, Series, Round, Winner, Loser, WRank, LRank, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets) %>%
+  rename(BestOf = Best.of)
+head(tennis)
 ```
 
 Missing data can be a problem. So let's handle this missing data before it messes up any calculations.
@@ -71,22 +61,22 @@ Missing data can be a problem. So let's handle this missing data before it messe
 - Some matches did not play a specific set (Due to injuries, etc), so we must replace those set scores with 0. We can check W1-W5 and L1-L5 for N/A values and replace with 0.
 
 ```{r}
-slamMatches$WRank <- suppressWarnings(as.numeric(as.character(slamMatches$WRank)))
-slamMatches$LRank <- suppressWarnings(as.numeric(as.character(slamMatches$LRank)))
-slamMatches$LRank[is.na(slamMatches$LRank)] <- as.factor(1000)
+tennis$WRank <- suppressWarnings(as.numeric(as.character(tennis$WRank)))
+tennis$LRank <- suppressWarnings(as.numeric(as.character(tennis$LRank)))
+tennis$LRank[is.na(tennis$LRank)] <- as.factor(1000)
 
-slamMatches$W1[is.na(slamMatches$W1)] <- 0
-slamMatches$L1[is.na(slamMatches$L1)] <- 0
-slamMatches$W2[is.na(slamMatches$W2)] <- 0
-slamMatches$L2[is.na(slamMatches$L2)] <- 0
-slamMatches$W3[is.na(slamMatches$W3)] <- 0
-slamMatches$L3[is.na(slamMatches$L3)] <- 0
-slamMatches$W4[is.na(slamMatches$W4)] <- 0
-slamMatches$L4[is.na(slamMatches$L4)] <- 0
-slamMatches$W5[is.na(slamMatches$W5)] <- 0
-slamMatches$L5[is.na(slamMatches$L5)] <- 0
+tennis$W1[is.na(tennis$W1)] <- 0
+tennis$L1[is.na(tennis$L1)] <- 0
+tennis$W2[is.na(tennis$W2)] <- 0
+tennis$L2[is.na(tennis$L2)] <- 0
+tennis$W3[is.na(tennis$W3)] <- 0
+tennis$L3[is.na(tennis$L3)] <- 0
+tennis$W4[is.na(tennis$W4)] <- 0
+tennis$L4[is.na(tennis$L4)] <- 0
+tennis$W5[is.na(tennis$W5)] <- 0
+tennis$L5[is.na(tennis$L5)] <- 0
 
-head(slamMatches)
+head(tennis)
 ```
 
 Now, there are a couple of attributes that could be useful but don't yet exist in this data frame. Let's see if we can add them.
@@ -94,30 +84,30 @@ Now, there are a couple of attributes that could be useful but don't yet exist i
 - The first will be what we call a rank differential. It is the losing players rank minus the winning players rank. This attribute will be used to determine how big of an upset, rankwise, some matches are. The lower the value is in the negatives, the more of an upset the match was. The only problem is, that WRank and LRank are factors, so we must first convert them to the correct type.
 - The second is the number of games won by the winner. We can calculate this by adding up the scores of W1-W5
 - The third is the number of games won by the loser. We can calculate this by adding up the scores of L1-L5
-- The fourth is Year. We are simply going to cut off the year from the Date attribute. Because all slams are at relatively the same date each year.
+- The fourth is Year. We are simply going to cut off the year from the Date attribute. This will help with grouping later on.
 
 ```{r, message=FALSE}
-slamMatches <- slamMatches %>%
+tennis <- tennis %>%
   mutate(Differential = LRank - WRank) %>%
   mutate(Wgames = W1 + W2 + W3 + W4 + W5) %>%
   mutate(Lgames = L1 + L2 + L3 + L4 + L5) %>%
-  mutate(Year = format(as.Date(slamMatches$Date, format="%d/%m/%Y"),"%Y")) %>%
-  select(Tournament, Year, Date, Surface, Round, Winner, Loser, WRank, LRank, Differential, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets, Wgames, Lgames) 
-head(slamMatches)
+  mutate(Year = format(as.Date(tennis$Date, format="%d/%m/%Y"),"%Y")) %>%
+  select(Tournament, Year, Date, Surface, BestOf, Series, Round, Winner, Loser, WRank, LRank, Differential, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets, Wgames, Lgames) 
+head(tennis)
 ```
 
 Now, let's get the individual matches for each player we are interested in. We can use filter to grab all matches where Roger Federer, Rafael Nadal or Novak Djokovic was either the winner or loser, depending on which player the data frame is for. We will be using these three data frames for a lot of analysis to come.
 
 ```{r}
-rfMatches <- slamMatches %>%
+rfMatches <- tennis %>%
   filter(Winner == "Federer R." | Loser == "Federer R.")
 head(rfMatches)
 
-rnMatches <- slamMatches %>%
+rnMatches <- tennis %>%
   filter(Winner == "Nadal R." | Loser == "Nadal R.")
 head(rnMatches)
 
-ndMatches <- slamMatches %>%
+ndMatches <- tennis %>%
   filter(Winner == "Djokovic N." | Loser == "Djokovic N.")
 head(ndMatches)
 ```
@@ -125,7 +115,7 @@ head(ndMatches)
 ### Exploratory Data Analysis
 Now that we have our data properly prepared. Let's analyze it.
 
-The main cornerstone of being an all time great, is being able to consistently beat top ranked players at the biggest tournaments. So, let's look at how each of our all time greats perform against top 20 ranked players. 
+The main cornerstone of being an all time great, is being able to consistently beat top ranked players. So, let's look at how each of our all time greats perform against top 20 ranked players. 
 
 So, to do this, we are going to take the data frame and filter out all losing players greater than 20 (Which in the case of tennis, would be a worse rank). We also will group by year so that we can plot our player's top 20 wins per yearly season.
 
@@ -134,15 +124,6 @@ After we have the groups, we can summarize these wins by using the n function to
 Then, we plot a bar graph that displays each player's Top 20 wins side by side.
 
 ```{r}
-rfMatches <- slamMatches %>%
-  filter(Winner == "Federer R." | Loser == "Federer R.")
-
-rnMatches <- slamMatches %>%
-  filter(Winner == "Nadal R." | Loser == "Nadal R.")
-
-ndMatches <- slamMatches %>%
-  filter(Winner == "Djokovic N." | Loser == "Djokovic N.")
-
 rfTop20 <- rfMatches %>%
   filter(Winner == "Federer R.") %>%
   filter(LRank <= 20) %>%
@@ -168,7 +149,7 @@ top20 <- rbind(rfTop20, rnTop20, ndTop20)
   
 ggplot(top20, mapping = aes(x=Year, y=top20Wins)) + 
   geom_bar(aes(fill = Player), position = "dodge", stat="identity") + 
-  ggtitle("Top 20 Wins in Grand Slams Per Year") + 
+  ggtitle("Top 20 Wins Per Year") + 
   ylab("Top 20 Wins") + xlab("Year") +
   scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00"))
   
@@ -176,30 +157,105 @@ ggplot(top20, mapping = aes(x=Year, y=top20Wins)) +
 
 Let's analyze this plot:
 
-- Let's keep in mind that there are only 4 grand slams with 5 possible matchups against top 20 players per tournament (Earliest you can play a top 20 player is the 3rd round). This means a player can have at max 20 top 20 wins per year (IF they are lucky, since there is a very low chance you would play a top 20 player in the third round)
-- We notice that Federer has the season (2007) with the most top 20 wins of the three. This was in 2007 where he won 3 grand slams and made the final of the fourth
-- Despite Federer's great longevity (He has top 20 wins in more years than the other two), it is Novak with longer periods of dominance, with four years of 10+ top 20 wins in Grand Slams. 
-- Nadal does not have a single year where he beat 10 or more top 20 opponents in grand slams.
+- We notice that Djokovic has one year, 2015, where he had over 40 top 20 wins. This was his most dominant year (And the most dominant year for any player in history; Djokovic won most of the tournaments he entered that year and rarely lost)
+- We also notice that Federer has great longevity, being able to consistently get more than 20 top 20 wins for 10 different years. To compare, Nadal has more than 20 top20 wins in 4 years while Djokovic has more than 20 top 20 wins in 7 different years.
+- We can also see the effect each player has on each other. Federer had a lot of top 20 wins in 2004-2007, but as Nadal and Djokovic started improving in 2008-2016, Federer's amount of wins decreased in the later years.
 
-One reason why Nadal failed to pass 10 top 20 wins in Grand Slams is because only one Grand Slam is on clay, which is Nadal's preferred surface. Let's analyze wins by surface.
+Nadal looks relatively unimpressive compared to Federer and Djokovic in this plot, but he is considered the greatest clay court player of all time. Let's analyze wins by surface to see if this is true.
+
+First, let's take the data frames and filter for all wins. We also will group by surface.
+
+After we have the groups, we can summarize these wins by using the n function to calculate the wins per surface for each player. Now, for each player we add a Player attribute to help us distinguish which player came from which data frame, and then we bind the three data frames together.
+
+Then, we plot a bar graph that displays each player's surface wins side by side.
 
 ```{r}
-rfMatches <- slamMatches %>%
-  filter(Winner == "Federer R." | Loser == "Federer R.")
+rfSurface <- rfMatches %>%
+  filter(Winner == "Federer R.") %>%
+  group_by(Surface) %>%
+  summarize(surfaceWins = n()) %>%
+  mutate(Player = "Federer")
 
-rnMatches <- slamMatches %>%
-  filter(Winner == "Nadal R." | Loser == "Nadal R.")
+rnSurface <- rnMatches %>%
+  filter(Winner == "Nadal R.") %>%
+  group_by(Surface) %>%
+  summarize(surfaceWins = n()) %>%
+  mutate(Player = "Nadal")
 
-ndMatches <- slamMatches %>%
-  filter(Winner == "Djokovic N." | Loser == "Djokovic N.")
+ndSurface <- ndMatches %>%
+  filter(Winner == "Djokovic N.") %>%
+  group_by(Surface) %>%
+  summarize(surfaceWins = n()) %>%
+  mutate(Player = "Djokovic")
+
+surface <- rbind(rfSurface, rnSurface, ndSurface)
+
+ggplot(surface, mapping = aes(x=Surface, y=surfaceWins)) + 
+  geom_bar(aes(fill = Player), position = "dodge", stat="identity") + 
+  ggtitle("Wins Per Surface") + 
+  ylab("Wins") + xlab("Surface") +
+  scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00"))
 ```
 
+Let's analyze this plot:
 
-Posible things to do:
+- Notice that Rafael Nadal does have the most wins on clay by far. He is leading Djokovic and Federer by a large margin.
+- Just as Nadal has the most wins on clay, Federer has by far the most wins on Grass, doubling Djokovic and Nadal. These numbers are relatively low because there aren't many grass tournaments.
+- Carpet was a surface that was discontinued in the late 2000s, so most players do not have many wins on Carpet. Federer has more wins than Djokovic and Nadal on Carpet because he is older and was playing more before Carpet's discontinuation.
+- Hard courts are the most common surface, so it makes sense that each player would have the most wins on that surface.
 
-- Analyze wins by surface (Bar Graph)
+One of the biggest contributors to the GOAT (Greatest of All Time) status are Grand Slam tournaments. There are four Grand Slam tournaments each year. These four tournaments, are the most prestigious tournaments in tennis and winning the trophy at one of these four tournaments is considered a great legacy. In the last 12 years, there were only 7 different grand slam champions. Roger Federer, Rafael Nadal and Novak Djokovic have held a sustained period of dominance over grand slams, winning a combined 48 out of the last 59 slams. (Federer winning 20, Nadal winning 16, Djokovic winning 12). 
+
+- Note, Federer and Nadal have won 3 and 2 grand slams, respectively, in 2017 and 2018. So, within the bounds of this dataset, Federer has only 17 grand slam wins and Nadal only has 14 grand slam wins)
+
+Let's look at the amount of grand slam wins each player has won.
+
+First we need to filter out all tournaments with a series that is not "Grand Slam". Then we need to group by tournament.
+
+We can then summarize using the n function to get all wins per slam, and add a Player attribute to help us distinguish which player came from which data frame. Then, we bind the three data frames together.
+
+```{r}
+rfSlams <- rfMatches %>%
+  filter(Winner == "Federer R.") %>%
+  filter(Series == "Grand Slam") %>%
+  group_by(Tournament) %>%
+  summarize(slamWins = n()) %>%
+  mutate(Player = "Federer")
+
+rnSlams <- rnMatches %>%
+  filter(Winner == "Nadal R.") %>%
+  filter(Series == "Grand Slam") %>%
+  group_by(Tournament) %>%
+  summarize(slamWins = n()) %>%
+  mutate(Player = "Nadal")
+
+ndSlams <- ndMatches %>%
+  filter(Winner == "Djokovic N.") %>%
+  filter(Series == "Grand Slam") %>%
+  group_by(Tournament) %>%
+  summarize(slamWins = n()) %>%
+  mutate(Player = "Djokovic")
+
+slams <- rbind(rfSlams, rnSlams, ndSlams)
+
+ggplot(slams, mapping = aes(x=Tournament, y=slamWins)) + 
+  geom_bar(aes(fill = Player), position = "dodge", stat="identity") + 
+  ggtitle("Grand Slam Wins") + 
+  ylab("Wins") + xlab("Grand Slam") +
+  scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00"))
+```
+
+Let's analyze this plot:
+
+- Nadal has the most French Open wins, which makes sense because the French Open is on clay, his favorite surface.
+- Federer has the most Wimbledon wins, which makes sense because Wimbledon is on grass, his favorite surface.
+- Djokovic is relatively balanced, winning approximately the same amount of matches for each slam.
+- Federer has the most wins for 3 out of the four slams, and the most wins overall. This makes sense because he has won the most grand slam titles, and also has been playing the longest.
+
+
+### To Do:
+
 - Average rank of players faced by year (Line Graph)
-- Analyze wins in quarterfinals and above
 - Analyze wins in finals
 - Analyze biggest upsets (Table)
 - Analyze dominant performances (Table)
