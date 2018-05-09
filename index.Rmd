@@ -12,7 +12,7 @@ library(tidyr)
 library(ggplot2)
 ```
 
-## Tutorial: An Analysis of The Careers of Roger Federer, Rafael Nadal and Novak Djokovic
+## Tutorial: An Analysis of Roger Federer, Rafael Nadal and Novak Djokovic
 
 ### Background
 Currently, tennis is experiencing the end of a "Golden Age". Right now, there are three all time greats competing at the highest stage; all while being at the closing door of their careers. These three are Roger Federer, Rafael Nadal and Novak Djokovic.
@@ -101,7 +101,7 @@ Now, let's get the individual matches for each player we are interested in. We c
 ```{r}
 rfMatches <- tennis %>%
   filter(Winner == "Federer R." | Loser == "Federer R.")
-head(rfMatches)
+rfMatches
 
 rnMatches <- tennis %>%
   filter(Winner == "Nadal R." | Loser == "Nadal R.")
@@ -252,10 +252,53 @@ Let's analyze this plot:
 - Djokovic is relatively balanced, winning approximately the same amount of matches for each slam.
 - Federer has the most wins for 3 out of the four slams, and the most wins overall. This makes sense because he has won the most grand slam titles, and also has been playing the longest.
 
+So far we've only been looking at wins. However, every player has off days and every player loses. Let's see what the win percentage of these players are for each year.
+
+First we need to assign each match a value for whether or not it was a victory; 1 for win, 0 for loss. Then, we need to group by year. Then, we can use summarize to take the mean of the WonMatch attribute for each group in order to create the winPercentage for that year. We also can take the Season values in order to preserve the Year attribute after summary. Then, we add a Player attribute to help us distinguish which player came from which data frame. Then, we bind the three data frames together.
+
+```{r}
+rfFinals <- rfMatches %>%
+  mutate(WonMatch = ifelse(Winner == "Federer R.", 1, 0)) %>%
+  mutate(Season = Year) %>%
+  group_by(Year) %>%
+  summarize(WinPercentage = mean(WonMatch), Season = median(as.numeric(Season))) %>%
+  mutate(Player = "Federer") %>%
+  select(Player, Season, WinPercentage)
+
+rnFinals <- rnMatches %>%
+  mutate(WonMatch = ifelse(Winner == "Nadal R.", 1, 0)) %>%
+  mutate(Season = Year) %>%
+  group_by(Year) %>%
+  summarize(WinPercentage = mean(WonMatch), Season = median(as.numeric(Season))) %>%
+  mutate(Player = "Nadal") %>%
+  select(Player, Season, WinPercentage)
+
+ndFinals <- ndMatches %>%
+  mutate(WonMatch = ifelse(Winner == "Djokovic N.", 1, 0)) %>%
+  mutate(Season = Year) %>%
+  group_by(Year) %>%
+  summarize(WinPercentage = mean(WonMatch), Season = median(as.numeric(Season))) %>%
+  mutate(Player = "Djokovic") %>%
+  select(Player, Season, WinPercentage)
+
+finals <- rbind(rfFinals, rnFinals, ndFinals)
+
+ggplot(finals, mapping = aes(x=Season, y=WinPercentage)) + 
+  geom_point(aes(color = Player)) + 
+  ggtitle("Win Percentage By Year") + 
+  ylab("Win Percentage") + xlab("Year") +
+  scale_color_manual(values=c("#999999", "#56B4E9", "#E69F00"))
+```
+
+Let's analyze this plot:
+
+- Federer and Djokovic both have 3 years where they had over a 0.9 win percentage
+- In comparison, Nadal only had 1 year with over a 0.9 win percentage
+- We can see that Federer's win percentage peaked in 2004-2006 and slowly moved downwards, likely due to Nadal (And then later Djokovic) rising through the ranks.
+- All three players had relatively low win percentages in the early stages of their career, except for Djokovic. This is because Djokovic was really young in 2004 and started his season towards the end of the year which did not give him many matches.
 
 ### To Do:
 
-- Average rank of players faced by year (Line Graph)
 - Analyze wins in finals
 - Analyze biggest upsets (Table)
 - Analyze dominant performances (Table)
