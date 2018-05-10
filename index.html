@@ -126,9 +126,12 @@ $(document).ready(function () {
 <div id="background" class="section level3">
 <h3>Background</h3>
 <p>Currently, tennis is experiencing the end of a “Golden Age”. Right now, there are three all time greats competing at the highest stage; all while being at the closing door of their careers. These three are Roger Federer, Rafael Nadal and Novak Djokovic.</p>
-<p>Roger Federer is widely considered the greatest of all time (GOAT). He has broken countless records and received many awards. Even at the age of 36, Roger Federer still is at the top of the rankings and continues to be a favorite for all of the biggest tournaments. You can look at his career statistics here: <a href="https://en.wikipedia.org/wiki/Roger_Federer_career_statistics" class="uri">https://en.wikipedia.org/wiki/Roger_Federer_career_statistics</a></p>
-<p>Rafael Nadal is considered the other main contender for greatest tennis player of all time status. He is considered the greatest clay court player of all time and joins Federer at the top of the rankings even today, at the age of 31. You can look at his career statistics here: <a href="https://en.wikipedia.org/wiki/Rafael_Nadal_career_statistics" class="uri">https://en.wikipedia.org/wiki/Rafael_Nadal_career_statistics</a></p>
-<p>Novak Djokovic is the youngest of the three, and after playing 3rd fiddle to Federer and Nadal, burst on to the scene in 2011 to take the crown at the top and completely dominate the tour at unprecedented levels from 2011 to 2016. Although he does not yet have the career accomplishments to equal Roger Federer or Rafael Nadal, he is considered a huge threat to his legacy. He is currently recovering from surgery at the moment, but could return into grand slam winning form soon. You can look at his career statistics here: <a href="https://en.wikipedia.org/wiki/Novak_Djokovic_career_statistics" class="uri">https://en.wikipedia.org/wiki/Novak_Djokovic_career_statistics</a></p>
+<p>Roger Federer is widely considered the greatest of all time (GOAT). He has broken countless records and received many awards. Even at the age of 36, Roger Federer still is at the top of the rankings and continues to be a favorite for all of the biggest tournaments. You can look at his career statistics here:</p>
+<p><a href="https://en.wikipedia.org/wiki/Roger_Federer_career_statistics" class="uri">https://en.wikipedia.org/wiki/Roger_Federer_career_statistics</a></p>
+<p>Rafael Nadal is considered the other main contender for greatest tennis player of all time status. He is considered the greatest clay court player of all time and joins Federer at the top of the rankings even today, at the age of 31. You can look at his career statistics here:</p>
+<p><a href="https://en.wikipedia.org/wiki/Rafael_Nadal_career_statistics" class="uri">https://en.wikipedia.org/wiki/Rafael_Nadal_career_statistics</a></p>
+<p>Novak Djokovic is the youngest of the three, and after playing 3rd fiddle to Federer and Nadal, burst on to the scene in 2011 to take the crown at the top and completely dominate the tour at unprecedented levels from 2011 to 2016. Although he does not yet have the career accomplishments to equal Roger Federer or Rafael Nadal, he is considered a huge threat to his legacy. He is currently recovering from surgery at the moment, but could return into grand slam winning form soon. You can look at his career statistics here:</p>
+<p><a href="https://en.wikipedia.org/wiki/Novak_Djokovic_career_statistics" class="uri">https://en.wikipedia.org/wiki/Novak_Djokovic_career_statistics</a></p>
 <p>This tutorial will take you through the entire data science pipeline, as we explore the performance of these three all time greats throughout their careers.</p>
 </div>
 <div id="gathering-and-tidying-the-data" class="section level3">
@@ -525,6 +528,8 @@ ggplot(finals, mapping = aes(x=Season, y=WinPercentage)) +
 </ul>
 <p>Now let’s see how the Win Percentages look if they are standardized.</p>
 <p>To standardize, we follow this formula: (winPercentage - meanWinPercentage) / sdPercentage</p>
+<p>To learn more about standardizing values:</p>
+<p><a href="http://www.statisticshowto.com/standardized-values-examples/" class="uri">http://www.statisticshowto.com/standardized-values-examples/</a></p>
 <p>So first, we need to find the mean and standard deviation of our win percentages. We can do this by using the summarize function and then assigning them to two variables.</p>
 <p>Next, we can use mutate to create the standardized win percentage, using the formula above.</p>
 <p>Then, we can plot a scatterplot of the standardized win percentages.</p>
@@ -613,11 +618,18 @@ upsets %&gt;% select(Tournament, Year, Winner, Loser, Surface, Round, WRank, LRa
 <li>I think the most important takeaway is how few upsets there are. Federer, Nadal and Djokovic play hundreds (Over 1000 for Federer) of matches, and only had 6, 8 and 4 big upsets, respectively. This stat is a testament to how consistently good these players are.</li>
 </ul>
 <p>Despite there being some bad losses above, in most cases, a match that involves Federer, Nadal or Djokovic is very quick and easy for them. Let’s analyze their dominant performances.</p>
-<p>First we filter out matches that do not result in a victory for our respective player. Then, we only keep matches where the loser got 5 games or less; this means that Federer/Nadal/Djokovic was able to beat the opponent in straight sets while dropping minimal games. Then, we used the summarize function to take the number of dominant matches for each player and added a Player attribute to help us distinguish which player came from which data frame. Then, we bind the three data frames together and displayed as a table.</p>
+<p>First we filter out matches that do not result in a victory for our respective player. Then, we only keep matches where the loser got 5 games or less; this means that Federer/Nadal/Djokovic was able to beat the opponent in straight sets while dropping minimal games. Then, we used the summarize function to take the number of dominant matches for each player and added a Player attribute to help us distinguish which player came from which data frame.</p>
+<p>We also should make a separate data frame, that totals up all wins for each player, using a similar process. We then join those two tables together.</p>
+<p>Then, we bind the three data frames together and displayed as a table.</p>
 <pre class="r"><code>dominantRF &lt;- rfMatches %&gt;%
   filter(Winner == &quot;Federer R.&quot;) %&gt;%
   filter(Lgames &lt;= 5) %&gt;%
   summarize(DominantWins = n()) %&gt;%
+  mutate(Player = &quot;Federer&quot;)
+
+rfWins &lt;- rfMatches %&gt;%
+  filter(Winner == &quot;Federer R.&quot;) %&gt;%
+  summarize(TotalWins = n()) %&gt;%
   mutate(Player = &quot;Federer&quot;)
 
 dominantRN &lt;- rnMatches %&gt;%
@@ -626,22 +638,41 @@ dominantRN &lt;- rnMatches %&gt;%
   summarize(DominantWins = n()) %&gt;%
   mutate(Player = &quot;Nadal&quot;)
 
+rnWins &lt;- rnMatches %&gt;%
+  filter(Winner == &quot;Nadal R.&quot;) %&gt;%
+  summarize(TotalWins = n()) %&gt;%
+  mutate(Player = &quot;Nadal&quot;)
+
 dominantND &lt;- ndMatches %&gt;%
   filter(Winner == &quot;Djokovic N.&quot;) %&gt;%
   filter(Lgames &lt;= 5) %&gt;%
   summarize(DominantWins = n()) %&gt;%
   mutate(Player = &quot;Djokovic&quot;)
 
+ndWins &lt;- ndMatches %&gt;%
+  filter(Winner == &quot;Djokovic N.&quot;) %&gt;%
+  summarize(TotalWins = n()) %&gt;%
+  mutate(Player = &quot;Djokovic&quot;)
+
+dominantRF &lt;- dominantRF %&gt;%
+  left_join(rfWins, by=&quot;Player&quot;)
+
+dominantRN &lt;- dominantRN %&gt;%
+  left_join(rnWins, by=&quot;Player&quot;)
+
+dominantND &lt;- dominantND %&gt;%
+  left_join(ndWins, by=&quot;Player&quot;)
+
 dominant &lt;- rbind(dominantRF, dominantRN, dominantND)
-dominant %&gt;% select(Player, DominantWins)</code></pre>
-<pre><code>##     Player DominantWins
-## 1  Federer          202
-## 2    Nadal          225
-## 3 Djokovic          188</code></pre>
+dominant %&gt;% select(Player, TotalWins, DominantWins)</code></pre>
+<pre><code>##     Player TotalWins DominantWins
+## 1  Federer      1018          202
+## 2    Nadal       779          225
+## 3 Djokovic       710          188</code></pre>
 <p>Let’s briefly analyze this table:</p>
 <ul>
 <li>Nadal is the player with the most dominant wins</li>
-<li>Federer, despite having more matches on his belt, still has less dominant wins than Nadal.</li>
+<li>Federer, despite having way more total wins, still has less dominant wins than Nadal.</li>
 </ul>
 </div>
 <div id="hypothesis-testing-machine-learning" class="section level3">
