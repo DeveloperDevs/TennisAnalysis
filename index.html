@@ -287,10 +287,10 @@ head(tennis)</code></pre>
 </ul>
 <pre class="r"><code>tennis &lt;- tennis %&gt;%
   mutate(Differential = LRank - WRank) %&gt;%
-  mutate(Wgames = W1 + W2 + W3 + W4 + W5) %&gt;%
-  mutate(Lgames = L1 + L2 + L3 + L4 + L5) %&gt;%
+  mutate(WGames = W1 + W2 + W3 + W4 + W5) %&gt;%
+  mutate(LGames = L1 + L2 + L3 + L4 + L5) %&gt;%
   mutate(Year = format(as.Date(tennis$Date, format=&quot;%d/%m/%Y&quot;),&quot;%Y&quot;)) %&gt;%
-  select(Tournament, Year, Date, Surface, BestOf, Series, Round, Winner, Loser, WRank, LRank, Differential, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, WSets, LSets, Wgames, Lgames) 
+  select(Tournament, Year, Date, Surface, BestOf, Series, Round, Winner, Loser, WRank, LRank, Differential, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, WSets, LSets, WGames, LGames) 
 head(tennis)</code></pre>
 <pre><code>##                           Tournament Year      Date Surface BestOf
 ## 1 Australian Hardcourt Championships 2000 3/01/2000    Hard      3
@@ -306,7 +306,7 @@ head(tennis)</code></pre>
 ## 4 International 1st Round   Federer R. Knippschild J.    65    87
 ## 5 International 1st Round  Fromberg R.  Woodbridge T.    81   198
 ## 6 International 1st Round Gambill J.M.     Arthurs W.    58   105
-##   Differential W1 L1 W2 L2 W3 L3 W4 L4 W5 L5 WSets LSets Wgames Lgames
+##   Differential W1 L1 W2 L2 W3 L3 W4 L4 W5 L5 WSets LSets WGames LGames
 ## 1           14  6  4  6  2  0  0  0  0  0  0     2     0     12      6
 ## 2           51  6  3  6  3  0  0  0  0  0  0     2     0     12      6
 ## 3          615  6  7  7  5  6  3  0  0  0  0     2     1     19     15
@@ -332,7 +332,7 @@ head(rfMatches)</code></pre>
 ## 4    Grand Slam 1st Round   Federer R.       Chang M.    62    38
 ## 5    Grand Slam 2nd Round   Federer R.     Kroslak J.    62   104
 ## 6    Grand Slam 3rd Round   Clement A.     Federer R.    54    62
-##   Differential W1 L1 W2 L2 W3 L3 W4 L4 W5 L5 WSets LSets Wgames Lgames
+##   Differential W1 L1 W2 L2 W3 L3 W4 L4 W5 L5 WSets LSets WGames LGames
 ## 1           22  6  1  6  4  0  0  0  0  0  0     2     0     12      5
 ## 2           60  7  6  6  4  0  0  0  0  0  0     2     0     13     10
 ## 3           16  6  4  6  4  0  0  0  0  0  0     2     0     12      8
@@ -356,7 +356,7 @@ head(rnMatches)</code></pre>
 ## 4 1st Round    Nadal R.   Marin J.A.    96   137           41  6  0  0  0
 ## 5 2nd Round Corretja A.     Nadal R.    17    96           79  3  6  6  2
 ## 6 1st Round    Nadal R. Mathieu P.H.    87    44          -43  7  5  6  4
-##   W3 L3 W4 L4 W5 L5 WSets LSets Wgames Lgames
+##   W3 L3 W4 L4 W5 L5 WSets LSets WGames LGames
 ## 1  0  0  0  0  0  0     2     0     12      3
 ## 2  0  0  0  0  0  0     2     0     13      8
 ## 3  0  0  0  0  0  0     2     0     13      8
@@ -380,7 +380,7 @@ head(ndMatches)</code></pre>
 ## 4 International 1st Round van Scheppingen D. Djokovic N.    81   248
 ## 5    Grand Slam 1st Round           Safin M. Djokovic N.     4   188
 ## 6 International 1st Round          Dupuis A. Djokovic N.   114   160
-##   Differential W1 L1 W2 L2 W3 L3 W4 L4 W5 L5 WSets LSets Wgames Lgames
+##   Differential W1 L1 W2 L2 W3 L3 W4 L4 W5 L5 WSets LSets WGames LGames
 ## 1          303  7  6  6  1  0  0  0  0  0  0     2     0     13      7
 ## 2         -205  2  6  6  4  6  4  0  0  0  0     2     1     14     14
 ## 3          218  4  6  6  4  6  4  0  0  0  0     2     1     16     14
@@ -697,7 +697,7 @@ upsets %&gt;% select(Tournament, Year, Winner, Loser, Surface, Round, WRank, LRa
 <p>Then, we bind the three data frames together and displayed as a table.</p>
 <pre class="r"><code>dominantRF &lt;- rfMatches %&gt;%
   filter(Winner == &quot;Federer R.&quot;) %&gt;%
-  filter(Lgames &lt;= 5) %&gt;%
+  filter(LGames &lt;= 5) %&gt;%
   summarize(DominantWins = n()) %&gt;%
   mutate(Player = &quot;Federer&quot;)
 
@@ -708,7 +708,7 @@ rfWins &lt;- rfMatches %&gt;%
 
 dominantRN &lt;- rnMatches %&gt;%
   filter(Winner == &quot;Nadal R.&quot;) %&gt;%
-  filter(Lgames &lt;= 5) %&gt;%
+  filter(LGames &lt;= 5) %&gt;%
   summarize(DominantWins = n()) %&gt;%
   mutate(Player = &quot;Nadal&quot;)
 
@@ -719,7 +719,7 @@ rnWins &lt;- rnMatches %&gt;%
 
 dominantND &lt;- ndMatches %&gt;%
   filter(Winner == &quot;Djokovic N.&quot;) %&gt;%
-  filter(Lgames &lt;= 5) %&gt;%
+  filter(LGames &lt;= 5) %&gt;%
   summarize(DominantWins = n()) %&gt;%
   mutate(Player = &quot;Djokovic&quot;)
 
@@ -760,7 +760,13 @@ dominant %&gt;% select(Player, TotalWins, DominantWins)</code></pre>
 <li>Will Roger Federer win his next match with Rafael Nadal?</li>
 </ul>
 <p>Before we start, we have to look for all matches between Federer and Nadal.</p>
-<p>To do this, we will take all of Federer’s matches and use filter to get all matches with Nadal as the winner. Then, we will do it again and get every match with Nadal as the loser. Then we will combine the two data frames. We will only select a few attributes to keep the data relatively clean, since we’re only focused on predicting results.</p>
+<p>To do this, we will take all of Federer’s matches and use filter to get all matches with Nadal as the winner. Then, we will do it again and get every match with Nadal as the loser. Then we will combine the two data frames. We will only select a few attributes to keep the data relatively clean, like Year, Winner, WGames and LGames, since we’re only focused on predicting results. We also need to give each row an ID.</p>
+<p>Why Did We Select These Attributes:</p>
+<ul>
+<li>We need the Year to arrange our data in chronological order.</li>
+<li>We need the Winner for obvious reasons (We’re predicting winners)</li>
+<li>We need WGames and LGames, the number of games won by the winner and won by the loser, to use as information to help fuel the predictions.</li>
+</ul>
 <pre class="r"><code>fedalMatches &lt;- rfMatches %&gt;%
   filter(Winner == &quot;Nadal R.&quot;) 
 
@@ -768,46 +774,87 @@ fedalMatches2 &lt;- rfMatches %&gt;%
   filter(Loser == &quot;Nadal R.&quot;) 
 
 fedal &lt;- rbind(fedalMatches, fedalMatches2) %&gt;%
-  select(Tournament, Year, Surface, Winner) %&gt;%
+  select(Year, Winner, WGames, LGames) %&gt;%
   arrange(Year)
 
+fedal$ID &lt;- seq.int(nrow(fedal))
+
 fedal</code></pre>
-<pre><code>##                                    Tournament Year Surface     Winner
-## 1                             NASDAQ-100 Open 2004    Hard   Nadal R.
-## 2                                 French Open 2005    Clay   Nadal R.
-## 3                             NASDAQ-100 Open 2005    Hard Federer R.
-## 4                  Dubai Tennis Championships 2006    Hard   Nadal R.
-## 5                         Monte Carlo Masters 2006    Clay   Nadal R.
-## 6           Campionati Internazional d'Italia 2006    Clay   Nadal R.
-## 7                                 French Open 2006    Clay   Nadal R.
-## 8                                   Wimbledon 2006   Grass Federer R.
-## 9                                 Masters Cup 2006    Hard Federer R.
-## 10                        Monte Carlo Masters 2007    Clay   Nadal R.
-## 11                                French Open 2007    Clay   Nadal R.
-## 12                                Hamburg TMS 2007    Clay Federer R.
-## 13                                  Wimbledon 2007   Grass Federer R.
-## 14                                Masters Cup 2007    Hard Federer R.
-## 15                        Monte Carlo Masters 2008    Clay   Nadal R.
-## 16                                Hamburg TMS 2008    Clay   Nadal R.
-## 17                                French Open 2008    Clay   Nadal R.
-## 18                                  Wimbledon 2008   Grass   Nadal R.
-## 19                            Australian Open 2009    Hard   Nadal R.
-## 20             Mutua Madrile\xf1a Madrid Open 2009    Clay Federer R.
-## 21             Mutua Madrile\xf1a Madrid Open 2010    Clay   Nadal R.
-## 22                                Masters Cup 2010    Hard Federer R.
-## 23                         Sony Ericsson Open 2011    Hard   Nadal R.
-## 24             Mutua Madrile\xf1a Madrid Open 2011    Clay   Nadal R.
-## 25                                French Open 2011    Clay   Nadal R.
-## 26                                Masters Cup 2011    Hard Federer R.
-## 27                            Australian Open 2012    Hard   Nadal R.
-## 28                           BNP Paribas Open 2012    Hard Federer R.
-## 29                           BNP Paribas Open 2013    Hard   Nadal R.
-## 30                Internazionali BNL d'Italia 2013    Clay   Nadal R.
-## 31 Western &amp; Southern Financial Group Masters 2013    Hard   Nadal R.
-## 32                                Masters Cup 2013    Hard   Nadal R.
-## 33                            Australian Open 2014    Hard   Nadal R.
-## 34                              Swiss Indoors 2015    Hard Federer R.</code></pre>
+<pre><code>##    Year     Winner WGames LGames ID
+## 1  2004   Nadal R.     12      6  1
+## 2  2005   Nadal R.     22     16  2
+## 3  2005 Federer R.     27     23  3
+## 4  2006   Nadal R.     14     14  4
+## 5  2006   Nadal R.     25     19  5
+## 6  2006   Nadal R.     28     29  6
+## 7  2006   Nadal R.     20     17  7
+## 8  2006 Federer R.     25     16  8
+## 9  2006 Federer R.     13      9  9
+## 10 2007   Nadal R.     12      8 10
+## 11 2007   Nadal R.     22     16 11
+## 12 2007 Federer R.     14      8 12
+## 13 2007 Federer R.     26     26 13
+## 14 2007 Federer R.     12      5 14
+## 15 2008   Nadal R.     14     10 15
+## 16 2008   Nadal R.     19     15 16
+## 17 2008   Nadal R.     18      4 17
+## 18 2008   Nadal R.     33     29 18
+## 19 2009   Nadal R.     26     25 19
+## 20 2009 Federer R.     12      8 20
+## 21 2010   Nadal R.     13     10 21
+## 22 2010 Federer R.     15     10 22
+## 23 2011   Nadal R.     12      5 23
+## 24 2011   Nadal R.     17     11 24
+## 25 2011   Nadal R.     25     19 25
+## 26 2011 Federer R.     12      3 26
+## 27 2012   Nadal R.     25     19 27
+## 28 2012 Federer R.     12      7 28
+## 29 2013   Nadal R.     12      6 29
+## 30 2013   Nadal R.     12      4 30
+## 31 2013   Nadal R.     17     14 31
+## 32 2013   Nadal R.     13      8 32
+## 33 2014   Nadal R.     19     12 33
+## 34 2015 Federer R.     17     13 34</code></pre>
 <p>Now, we have a dataframe with outcomes for each match. What we need to do next is build a classifier for each outcome based on the predictors.</p>
+<p>First we have to create a Game Differential attribute: - It will be the number of games won by Federer, minus the number of games won by Nadal. - So all matches won by Nadal are negative; matches won by Federer are positive. - This differential attribute will help us make predictions</p>
+<pre class="r"><code>fedal %&gt;%
+  mutate(Differential = ifelse(Winner == &quot;Federer R.&quot;, WGames - LGames, LGames - WGames)) %&gt;%
+  select(ID, Winner, Differential)</code></pre>
+<pre><code>##    ID     Winner Differential
+## 1   1   Nadal R.           -6
+## 2   2   Nadal R.           -6
+## 3   3 Federer R.            4
+## 4   4   Nadal R.            0
+## 5   5   Nadal R.           -6
+## 6   6   Nadal R.            1
+## 7   7   Nadal R.           -3
+## 8   8 Federer R.            9
+## 9   9 Federer R.            4
+## 10 10   Nadal R.           -4
+## 11 11   Nadal R.           -6
+## 12 12 Federer R.            6
+## 13 13 Federer R.            0
+## 14 14 Federer R.            7
+## 15 15   Nadal R.           -4
+## 16 16   Nadal R.           -4
+## 17 17   Nadal R.          -14
+## 18 18   Nadal R.           -4
+## 19 19   Nadal R.           -1
+## 20 20 Federer R.            4
+## 21 21   Nadal R.           -3
+## 22 22 Federer R.            5
+## 23 23   Nadal R.           -7
+## 24 24   Nadal R.           -6
+## 25 25   Nadal R.           -6
+## 26 26 Federer R.            9
+## 27 27   Nadal R.           -6
+## 28 28 Federer R.            5
+## 29 29   Nadal R.           -6
+## 30 30   Nadal R.           -8
+## 31 31   Nadal R.           -3
+## 32 32   Nadal R.           -5
+## 33 33   Nadal R.           -7
+## 34 34 Federer R.            4</code></pre>
 </div>
 <div id="messages" class="section level3">
 <h3>Messages</h3>

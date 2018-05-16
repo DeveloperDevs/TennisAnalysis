@@ -125,10 +125,10 @@ Now, there are a couple of attributes that could be useful but don't yet exist i
 ```{r, message=FALSE}
 tennis <- tennis %>%
   mutate(Differential = LRank - WRank) %>%
-  mutate(Wgames = W1 + W2 + W3 + W4 + W5) %>%
-  mutate(Lgames = L1 + L2 + L3 + L4 + L5) %>%
+  mutate(WGames = W1 + W2 + W3 + W4 + W5) %>%
+  mutate(LGames = L1 + L2 + L3 + L4 + L5) %>%
   mutate(Year = format(as.Date(tennis$Date, format="%d/%m/%Y"),"%Y")) %>%
-  select(Tournament, Year, Date, Surface, BestOf, Series, Round, Winner, Loser, WRank, LRank, Differential, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, WSets, LSets, Wgames, Lgames) 
+  select(Tournament, Year, Date, Surface, BestOf, Series, Round, Winner, Loser, WRank, LRank, Differential, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, WSets, LSets, WGames, LGames) 
 head(tennis)
 ```
 
@@ -476,7 +476,7 @@ Then, we bind the three data frames together and displayed as a table.
 ```{r}
 dominantRF <- rfMatches %>%
   filter(Winner == "Federer R.") %>%
-  filter(Lgames <= 5) %>%
+  filter(LGames <= 5) %>%
   summarize(DominantWins = n()) %>%
   mutate(Player = "Federer")
 
@@ -487,7 +487,7 @@ rfWins <- rfMatches %>%
 
 dominantRN <- rnMatches %>%
   filter(Winner == "Nadal R.") %>%
-  filter(Lgames <= 5) %>%
+  filter(LGames <= 5) %>%
   summarize(DominantWins = n()) %>%
   mutate(Player = "Nadal")
 
@@ -498,7 +498,7 @@ rnWins <- rnMatches %>%
 
 dominantND <- ndMatches %>%
   filter(Winner == "Djokovic N.") %>%
-  filter(Lgames <= 5) %>%
+  filter(LGames <= 5) %>%
   summarize(DominantWins = n()) %>%
   mutate(Player = "Djokovic")
 
@@ -540,7 +540,13 @@ The hypothesis we will test is:
 
 Before we start, we have to look for all matches between Federer and Nadal. 
 
-To do this, we will take all of Federer's matches and use filter to get all matches with Nadal as the winner. Then, we will do it again and get every match with Nadal as the loser. Then we will combine the two data frames. We will only select a few attributes to keep the data relatively clean, since we're only focused on predicting results.
+To do this, we will take all of Federer's matches and use filter to get all matches with Nadal as the winner. Then, we will do it again and get every match with Nadal as the loser. Then we will combine the two data frames. We will only select a few attributes to keep the data relatively clean, like Year, Winner, WGames and LGames, since we're only focused on predicting results. We also need to give each row an ID.
+
+Why Did We Select These Attributes:
+
+- We need the Year to arrange our data in chronological order.
+- We need the Winner for obvious reasons (We're predicting winners)
+- We need WGames and LGames, the number of games won by the winner and won by the loser, to use as information to help fuel the predictions.
 
 ```{r}
 
@@ -551,8 +557,10 @@ fedalMatches2 <- rfMatches %>%
   filter(Loser == "Nadal R.") 
 
 fedal <- rbind(fedalMatches, fedalMatches2) %>%
-  select(Tournament, Year, Surface, Winner) %>%
+  select(Year, Winner, WGames, LGames) %>%
   arrange(Year)
+
+fedal$ID <- seq.int(nrow(fedal))
 
 fedal
 
@@ -560,8 +568,16 @@ fedal
 
 Now, we have a dataframe with outcomes for each match. What we need to do next is build a classifier for each outcome based on the predictors. 
 
+First we have to create a Game Differential attribute: 
+- It will be the number of games won by Federer, minus the number of games won by Nadal.
+- So all matches won by Nadal are negative; matches won by Federer are positive.
+- This differential attribute will help us make predictions
 
 ```{r}
+
+fedal %>%
+  mutate(Differential = ifelse(Winner == "Federer R.", WGames - LGames, LGames - WGames)) %>%
+  select(ID, Winner, Differential)
 
 ```
 
