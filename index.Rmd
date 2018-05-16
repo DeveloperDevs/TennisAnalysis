@@ -10,6 +10,7 @@ library(tidyverse)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(randomForest)
 ```
 
 ## An Analysis of Roger Federer, Rafael Nadal and Novak Djokovic
@@ -40,6 +41,7 @@ You will need to download R, as well as the following packages:
 - dplyr
 - tidyr
 - ggplot2
+- randomForest
 
 We recommend that you use RStudio to interact with R. RStudio is an environment that makes it easier for us to install the packages above and allows us to better perform data analysis with R.
 
@@ -81,7 +83,7 @@ Now, of the 54 columns/attributes, there are quite a few that we do not really n
 
 ```{r}
 tennis <- tennis %>%
-  select(Tournament, Date, Surface, Best.of, Series, Round, Winner, Loser, WRank, LRank, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets) %>%
+  dplyr::select(Tournament, Date, Surface, Best.of, Series, Round, Winner, Loser, WRank, LRank, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets) %>%
   rename(BestOf = Best.of) %>%
   rename(WSets = Wsets) %>%
   rename(LSets = Lsets)
@@ -572,14 +574,83 @@ First we have to create a Game Differential attribute:
 - It will be the number of games won by Federer, minus the number of games won by Nadal.
 - So all matches won by Nadal are negative; matches won by Federer are positive.
 - This differential attribute will help us make predictions
+- Likewise, we switched the Winner attribute to a Prediction attribute so that we can better deal with typing.
 
 ```{r}
 
-fedal %>%
+fedalPrepped <- fedal %>%
   mutate(Differential = ifelse(Winner == "Federer R.", WGames - LGames, LGames - WGames)) %>%
-  select(ID, Winner, Differential)
+  mutate(Prediction = ifelse(Differential >= 0, "Federer", "Nadal")) %>%
+  dplyr::select(ID, Prediction, Differential)
+
+fedalPrepped$Prediction <- factor(fedalPrepped$Prediction)
+
+fedalPrepped
 
 ```
+
+Now, we need to split the prepped data into training and testing subsets. We can use sample_frac to get 35% of this data. Learn more about sample_frac here:
+
+https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/sample
+
+
+```{r}
+set.seed(4574)
+
+fedalTest <- fedalPrepped %>%
+  group_by(Prediction) %>%
+  sample_frac(.35) %>%
+  ungroup()
+
+fedalTest
+
+fedalTrain <- fedalPrepped %>%
+  anti_join(fedalTest, by="ID")
+
+fedalTrain
+```
+
+Now that we have our testing and training data prepared, let's use a random forest to train our data. In order to learn what a random forest is, we have to learn what a decision tree is:
+
+Decision trees are used in classification problems where the outcome is categorical (So in our case the categories are: Federer, Nadal). The tree would partition for each categorical prediction into regions, which predict the majority class for training observations within region.
+
+Using a decision tree has several good properties:
+
+- Decision trees are natural constructs, since the outcomes are categorical
+- The models are invariant under transformations in the predictor space
+- Tree growth is efficient
+- Models go after interactions immediately
+- Multi-factor responses are easily dealt with
+
+However, there are a couple problems:
+
+- Results can be variable
+- Simple trees do not have a lot of predictive power
+- Its a greedy algorithm, so the absolute best model may not be found
+
+To solve these problems, We will train over a random forest. Random Forests are a popular approach that addresses the shortcomings of singular decision trees by resampling the training data. The goal of a random forest is to improve prediction performance and reduce instability. A random forest averages multiple decision trees that were constructed using a subset of the training data and a subset of the attributes on which to split. So, instead of relying on one decision tree, we are relying on the average of many decision trees. 
+
+To use a random forest, we will use a function from the package "randomForest", you can read more about that package here:
+
+https://cran.r-project.org/web/packages/randomForest/randomForest.pdf
+
+```{r, message=FALSE}
+rf <- randomForest(Prediction~., data=fedalTrain %>% dplyr::select(-ID))
+rf
+```
+
+Let's analyze exactly what this is:
+
+
+Now, we need to make predictions based on BOTH the training data and test data.
+
+```{r}
+fedalPredictions <- predict(rf, newdata=fedalTest %>% dplyr::select(-ID))
+
+table(pred=fedalPredictions, observed=fedalTest$Prediction)
+```
+
+We will discuss the implications of these results in the next section.
 
 ### Messages
 Here are the results of our Exploratory Data Analysis:

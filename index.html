@@ -121,6 +121,7 @@ $(document).ready(function () {
 </div>
 
 
+<pre><code>## Warning: package 'randomForest' was built under R version 3.4.4</code></pre>
 <div id="an-analysis-of-roger-federer-rafael-nadal-and-novak-djokovic" class="section level2">
 <h2>An Analysis of Roger Federer, Rafael Nadal and Novak Djokovic</h2>
 <div id="background" class="section level3">
@@ -142,6 +143,7 @@ $(document).ready(function () {
 <li>dplyr</li>
 <li>tidyr</li>
 <li>ggplot2</li>
+<li>randomForest</li>
 </ul>
 <p>We recommend that you use RStudio to interact with R. RStudio is an environment that makes it easier for us to install the packages above and allows us to better perform data analysis with R.</p>
 <p>R can be installed here:</p>
@@ -208,7 +210,7 @@ head(tennis)</code></pre>
 <li>For those that are OCD, rename best.of to BestOf, Wsets to WSets, and Lsets to LSets, so they follow a common naming standard.</li>
 </ul>
 <pre class="r"><code>tennis &lt;- tennis %&gt;%
-  select(Tournament, Date, Surface, Best.of, Series, Round, Winner, Loser, WRank, LRank, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets) %&gt;%
+  dplyr::select(Tournament, Date, Surface, Best.of, Series, Round, Winner, Loser, WRank, LRank, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets) %&gt;%
   rename(BestOf = Best.of) %&gt;%
   rename(WSets = Wsets) %&gt;%
   rename(LSets = Lsets)
@@ -816,45 +818,145 @@ fedal</code></pre>
 ## 33 2014   Nadal R.     19     12 33
 ## 34 2015 Federer R.     17     13 34</code></pre>
 <p>Now, we have a dataframe with outcomes for each match. What we need to do next is build a classifier for each outcome based on the predictors.</p>
-<p>First we have to create a Game Differential attribute: - It will be the number of games won by Federer, minus the number of games won by Nadal. - So all matches won by Nadal are negative; matches won by Federer are positive. - This differential attribute will help us make predictions</p>
-<pre class="r"><code>fedal %&gt;%
+<p>First we have to create a Game Differential attribute: - It will be the number of games won by Federer, minus the number of games won by Nadal. - So all matches won by Nadal are negative; matches won by Federer are positive. - This differential attribute will help us make predictions - Likewise, we switched the Winner attribute to a Prediction attribute so that we can better deal with typing.</p>
+<pre class="r"><code>fedalPrepped &lt;- fedal %&gt;%
   mutate(Differential = ifelse(Winner == &quot;Federer R.&quot;, WGames - LGames, LGames - WGames)) %&gt;%
-  select(ID, Winner, Differential)</code></pre>
-<pre><code>##    ID     Winner Differential
-## 1   1   Nadal R.           -6
-## 2   2   Nadal R.           -6
-## 3   3 Federer R.            4
-## 4   4   Nadal R.            0
-## 5   5   Nadal R.           -6
-## 6   6   Nadal R.            1
-## 7   7   Nadal R.           -3
-## 8   8 Federer R.            9
-## 9   9 Federer R.            4
-## 10 10   Nadal R.           -4
-## 11 11   Nadal R.           -6
-## 12 12 Federer R.            6
-## 13 13 Federer R.            0
-## 14 14 Federer R.            7
-## 15 15   Nadal R.           -4
-## 16 16   Nadal R.           -4
-## 17 17   Nadal R.          -14
-## 18 18   Nadal R.           -4
-## 19 19   Nadal R.           -1
-## 20 20 Federer R.            4
-## 21 21   Nadal R.           -3
-## 22 22 Federer R.            5
-## 23 23   Nadal R.           -7
-## 24 24   Nadal R.           -6
-## 25 25   Nadal R.           -6
-## 26 26 Federer R.            9
-## 27 27   Nadal R.           -6
-## 28 28 Federer R.            5
-## 29 29   Nadal R.           -6
-## 30 30   Nadal R.           -8
-## 31 31   Nadal R.           -3
-## 32 32   Nadal R.           -5
-## 33 33   Nadal R.           -7
-## 34 34 Federer R.            4</code></pre>
+  mutate(Prediction = ifelse(Differential &gt;= 0, &quot;Federer&quot;, &quot;Nadal&quot;)) %&gt;%
+  dplyr::select(ID, Prediction, Differential)
+
+fedalPrepped$Prediction &lt;- factor(fedalPrepped$Prediction)
+
+fedalPrepped</code></pre>
+<pre><code>##    ID Prediction Differential
+## 1   1      Nadal           -6
+## 2   2      Nadal           -6
+## 3   3    Federer            4
+## 4   4    Federer            0
+## 5   5      Nadal           -6
+## 6   6    Federer            1
+## 7   7      Nadal           -3
+## 8   8    Federer            9
+## 9   9    Federer            4
+## 10 10      Nadal           -4
+## 11 11      Nadal           -6
+## 12 12    Federer            6
+## 13 13    Federer            0
+## 14 14    Federer            7
+## 15 15      Nadal           -4
+## 16 16      Nadal           -4
+## 17 17      Nadal          -14
+## 18 18      Nadal           -4
+## 19 19      Nadal           -1
+## 20 20    Federer            4
+## 21 21      Nadal           -3
+## 22 22    Federer            5
+## 23 23      Nadal           -7
+## 24 24      Nadal           -6
+## 25 25      Nadal           -6
+## 26 26    Federer            9
+## 27 27      Nadal           -6
+## 28 28    Federer            5
+## 29 29      Nadal           -6
+## 30 30      Nadal           -8
+## 31 31      Nadal           -3
+## 32 32      Nadal           -5
+## 33 33      Nadal           -7
+## 34 34    Federer            4</code></pre>
+<p>Now, we need to split the prepped data into training and testing subsets. We can use sample_frac to get 35% of this data. Learn more about sample_frac here:</p>
+<p><a href="https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/sample" class="uri">https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/sample</a></p>
+<pre class="r"><code>set.seed(4574)
+
+fedalTest &lt;- fedalPrepped %&gt;%
+  group_by(Prediction) %&gt;%
+  sample_frac(.35) %&gt;%
+  ungroup()
+
+fedalTest</code></pre>
+<pre><code>## # A tibble: 12 x 3
+##       ID Prediction Differential
+##    &lt;int&gt; &lt;fct&gt;             &lt;dbl&gt;
+##  1     9 Federer            4.00
+##  2    26 Federer            9.00
+##  3    14 Federer            7.00
+##  4    12 Federer            6.00
+##  5     8 Federer            9.00
+##  6    30 Nadal            - 8.00
+##  7    17 Nadal            -14.0 
+##  8    15 Nadal            - 4.00
+##  9    24 Nadal            - 6.00
+## 10    21 Nadal            - 3.00
+## 11    16 Nadal            - 4.00
+## 12    18 Nadal            - 4.00</code></pre>
+<pre class="r"><code>fedalTrain &lt;- fedalPrepped %&gt;%
+  anti_join(fedalTest, by=&quot;ID&quot;)
+
+fedalTrain</code></pre>
+<pre><code>##    ID Prediction Differential
+## 1   1      Nadal           -6
+## 2   2      Nadal           -6
+## 3   3    Federer            4
+## 4   4    Federer            0
+## 5   5      Nadal           -6
+## 6   6    Federer            1
+## 7   7      Nadal           -3
+## 8  10      Nadal           -4
+## 9  11      Nadal           -6
+## 10 13    Federer            0
+## 11 19      Nadal           -1
+## 12 20    Federer            4
+## 13 22    Federer            5
+## 14 23      Nadal           -7
+## 15 25      Nadal           -6
+## 16 27      Nadal           -6
+## 17 28    Federer            5
+## 18 29      Nadal           -6
+## 19 31      Nadal           -3
+## 20 32      Nadal           -5
+## 21 33      Nadal           -7
+## 22 34    Federer            4</code></pre>
+<p>Now that we have our testing and training data prepared, let’s use a random forest to train our data. In order to learn what a random forest is, we have to learn what a decision tree is:</p>
+<p>Decision trees are used in classification problems where the outcome is categorical (So in our case the categories are: Federer, Nadal). The tree would partition for each categorical prediction into regions, which predict the majority class for training observations within region.</p>
+<p>Using a decision tree has several good properties:</p>
+<ul>
+<li>Decision trees are natural constructs, since the outcomes are categorical</li>
+<li>The models are invariant under transformations in the predictor space</li>
+<li>Tree growth is efficient</li>
+<li>Models go after interactions immediately</li>
+<li>Multi-factor responses are easily dealt with</li>
+</ul>
+<p>However, there are a couple problems:</p>
+<ul>
+<li>Results can be variable</li>
+<li>Simple trees do not have a lot of predictive power</li>
+<li>Its a greedy algorithm, so the absolute best model may not be found</li>
+</ul>
+<p>To solve these problems, We will train over a random forest. Random Forests are a popular approach that addresses the shortcomings of singular decision trees by resampling the training data. The goal of a random forest is to improve prediction performance and reduce instability. A random forest averages multiple decision trees that were constructed using a subset of the training data and a subset of the attributes on which to split. So, instead of relying on one decision tree, we are relying on the average of many decision trees.</p>
+<p>To use a random forest, we will use a function from the package “randomForest”, you can read more about that package here:</p>
+<p><a href="https://cran.r-project.org/web/packages/randomForest/randomForest.pdf" class="uri">https://cran.r-project.org/web/packages/randomForest/randomForest.pdf</a></p>
+<pre class="r"><code>rf &lt;- randomForest(Prediction~., data=fedalTrain %&gt;% dplyr::select(-ID))
+rf</code></pre>
+<pre><code>## 
+## Call:
+##  randomForest(formula = Prediction ~ ., data = fedalTrain %&gt;%      dplyr::select(-ID)) 
+##                Type of random forest: classification
+##                      Number of trees: 500
+## No. of variables tried at each split: 1
+## 
+##         OOB estimate of  error rate: 4.55%
+## Confusion matrix:
+##         Federer Nadal class.error
+## Federer       8     0  0.00000000
+## Nadal         1    13  0.07142857</code></pre>
+<p>Let’s analyze exactly what this is:</p>
+<p>Now, we need to make predictions based on BOTH the training data and test data.</p>
+<pre class="r"><code>fedalPredictions &lt;- predict(rf, newdata=fedalTest %&gt;% dplyr::select(-ID))
+
+table(pred=fedalPredictions, observed=fedalTest$Prediction)</code></pre>
+<pre><code>##          observed
+## pred      Federer Nadal
+##   Federer       5     0
+##   Nadal         0     7</code></pre>
+<p>We will discuss the implications of these results in the next section.</p>
 </div>
 <div id="messages" class="section level3">
 <h3>Messages</h3>
