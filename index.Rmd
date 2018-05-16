@@ -156,11 +156,9 @@ Before we begin our analysis, let's quickly dive into the concepts of grouping a
 
 Sometimes it's better to just see rather than hear about it, so let's go to an example:
 
-The main cornerstone of being an all time great, is being able to consistently beat top ranked players. So, let's look at how each of our all time greats perform against top 20 ranked players. 
+- The main cornerstone of being an all time great, is being able to consistently beat top ranked players. So, let's look at how each of our all time greats perform against top 20 ranked players. 
 
-So, to do this, we are going to take the data frame with our respective player's winning matches and filter out all losing players with a rank greater than 20 (Which in the case of tennis, would be a worse rank). 
-
-Then, we use the group_by operation to group each data frame by year so that we can later plot our player's top 20 wins per yearly season. You can read more about the group_by operation in R via its documentation here:
+So, to do this, we are going to take the data frame with our respective player's winning matches and filter out all losing players with a rank greater than 20 (Which in the case of tennis, would be a worse rank). Then, we use the group_by operation to group each data frame by year so that we can later plot our player's top 20 wins per yearly season. You can read more about the group_by operation in R via its documentation here:
 
 https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/group_by
 
@@ -225,11 +223,9 @@ Let's analyze this plot:
 
 As we can see in the plot above, Nadal looks relatively unimpressive compared to Federer and Djokovic, but he is considered the greatest clay court player of all time. Let's analyze wins by surface type to see if this is true.
 
-First, let's take the data frames and filter for all wins. We will also group by surface.
+First, let's take the data frames and filter for all wins. We will also group by surface. 
 
-After we have the groups, we can summarize these wins by using the n function to calculate the wins per surface for each player. 
-
-Now, for each player's data frame, we need to add a Player attribute to help us distinguish which player came from which data frame. Then, we bind or combine the three data frames together.
+After we have the groups, we can summarize these wins by using the n function to calculate the wins per surface for each player. For each player's data frame, we need to add a Player attribute to help us distinguish which player came from which data frame. Then, we can bind or combine the three data frames together.
 
 Lastly, we use ggplot to plot a bar graph that displays each player's surface wins side by side.
 
@@ -281,9 +277,9 @@ One of the biggest contributors to the GOAT (Greatest of All Time) status are Gr
 
 Let's look at the amount of grand slam wins each player has won.
 
-First we need to filter out all tournaments with a series that is not "Grand Slam". Then, we need to group by tournament.
+First we need to filter out all tournaments with a series that is not "Grand Slam". 
 
-We can then summarize using the n function to get all wins per slam, and add a Player attribute to help us distinguish which player came from which data frame. Then, we bind or combine the three data frames together.
+Then, we need to group by tournament. Afterwards, we can summarize the groups using the n function to get all wins per slam, and add a Player attribute to help us distinguish which player came from which data frame. Then, we bind or combine the three data frames together.
 
 Lastly, we use ggplot to plot a bar graph that displays each player's grand slam wins side by side.
 

@@ -395,13 +395,18 @@ head(ndMatches)</code></pre>
 <li>This is where summarizing comes in: After grouping, the summarize operation simply takes each group and calls a summary function on that group, performing a calculation that collapses the data frame into one neat row with the result of that calculation.</li>
 </ul>
 <p>Sometimes it’s better to just see rather than hear about it, so let’s go to an example:</p>
-<p>The main cornerstone of being an all time great, is being able to consistently beat top ranked players. So, let’s look at how each of our all time greats perform against top 20 ranked players.</p>
-<p>So, to do this, we are going to take the data frame with our respective player’s winning matches and filter out all losing players with a rank greater than 20 (Which in the case of tennis, would be a worse rank).</p>
-<p>Then, we use the group_by operation to group each data frame by year so that we can later plot our player’s top 20 wins per yearly season. You can read more about the group_by operation in R via its documentation here: <a href="https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/group_by" class="uri">https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/group_by</a></p>
-<p>After we have the groups, we can summarize these wins by using the n function to calculate the number of top 20 wins each player had for each season/group. You can read more about the summarize operation in R here: <a href="https://www.rdocumentation.org/packages/Hmisc/versions/4.1-1/topics/summarize" class="uri">https://www.rdocumentation.org/packages/Hmisc/versions/4.1-1/topics/summarize</a></p>
-<p>The n function simply gives the number of entities in the group. You can read its documentation here: <a href="https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/n" class="uri">https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/n</a></p>
+<ul>
+<li>The main cornerstone of being an all time great, is being able to consistently beat top ranked players. So, let’s look at how each of our all time greats perform against top 20 ranked players.</li>
+</ul>
+<p>So, to do this, we are going to take the data frame with our respective player’s winning matches and filter out all losing players with a rank greater than 20 (Which in the case of tennis, would be a worse rank). Then, we use the group_by operation to group each data frame by year so that we can later plot our player’s top 20 wins per yearly season. You can read more about the group_by operation in R via its documentation here:</p>
+<p><a href="https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/group_by" class="uri">https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/group_by</a></p>
+<p>After we have the groups, we can summarize these wins by using the n function to calculate the number of top 20 wins each player had for each season/group. You can read more about the summarize operation in R here:</p>
+<p><a href="https://www.rdocumentation.org/packages/Hmisc/versions/4.1-1/topics/summarize" class="uri">https://www.rdocumentation.org/packages/Hmisc/versions/4.1-1/topics/summarize</a></p>
+<p>The n function simply gives the number of entities in the group. You can read its documentation here:</p>
+<p><a href="https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/n" class="uri">https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/n</a></p>
 <p>Now, for each player’s data frame, we need to add a Player attribute to help us distinguish which player came from which data frame. Then, we bind or combine the three data frames together.</p>
-<p>Lastly, we can use ggplot to plot a bar graph that displays each player’s Top 20 wins side by side for each year. You can learn more about ggplot here: <a href="http://ggplot.yhathq.com/how-it-works.html" class="uri">http://ggplot.yhathq.com/how-it-works.html</a></p>
+<p>Lastly, we can use ggplot to plot a bar graph that displays each player’s Top 20 wins side by side for each year. You can learn more about ggplot here:</p>
+<p><a href="http://ggplot.yhathq.com/how-it-works.html" class="uri">http://ggplot.yhathq.com/how-it-works.html</a></p>
 <p>Let’s quickly go over why I will use a bar graph for this:</p>
 <ul>
 <li>We will use a bar graph in order to see the relationship between two things: Top 20 Wins and Player Name.</li>
@@ -446,8 +451,7 @@ ggplot(top20, mapping = aes(x=Year, y=top20Wins)) +
 </ul>
 <p>As we can see in the plot above, Nadal looks relatively unimpressive compared to Federer and Djokovic, but he is considered the greatest clay court player of all time. Let’s analyze wins by surface type to see if this is true.</p>
 <p>First, let’s take the data frames and filter for all wins. We will also group by surface.</p>
-<p>After we have the groups, we can summarize these wins by using the n function to calculate the wins per surface for each player.</p>
-<p>Now, for each player’s data frame, we need to add a Player attribute to help us distinguish which player came from which data frame. Then, we bind or combine the three data frames together.</p>
+<p>After we have the groups, we can summarize these wins by using the n function to calculate the wins per surface for each player. For each player’s data frame, we need to add a Player attribute to help us distinguish which player came from which data frame. Then, we can bind or combine the three data frames together.</p>
 <p>Lastly, we use ggplot to plot a bar graph that displays each player’s surface wins side by side.</p>
 <p>Let’s quickly go over why I will use a bar graph for this:</p>
 <ul>
@@ -494,8 +498,8 @@ ggplot(surface, mapping = aes(x=Surface, y=surfaceWins)) +
 <li>Note, Federer and Nadal have won 3 and 2 grand slams, respectively, in 2017 and 2018. So, within the bounds of this dataset (Which ends in 2016), Federer has only 17 grand slam wins and Nadal has only 14 grand slam wins.</li>
 </ul>
 <p>Let’s look at the amount of grand slam wins each player has won.</p>
-<p>First we need to filter out all tournaments with a series that is not “Grand Slam”. Then, we need to group by tournament.</p>
-<p>We can then summarize using the n function to get all wins per slam, and add a Player attribute to help us distinguish which player came from which data frame. Then, we bind or combine the three data frames together.</p>
+<p>First we need to filter out all tournaments with a series that is not “Grand Slam”.</p>
+<p>Then, we need to group by tournament. Afterwards, we can summarize the groups using the n function to get all wins per slam, and add a Player attribute to help us distinguish which player came from which data frame. Then, we bind or combine the three data frames together.</p>
 <p>Lastly, we use ggplot to plot a bar graph that displays each player’s grand slam wins side by side.</p>
 <p>Let’s quickly go over why I will use a bar graph for this:</p>
 <ul>
@@ -592,7 +596,8 @@ ggplot(finals, mapping = aes(x=Season, y=WinPercentage)) +
 </ul>
 <p>Now let’s see how the Win Percentages would look if they are standardized. Standardizing simply takes each win percentage value and turns it into a numerical value based on it’s variance. Positive numbers are above the mean, while negative numbers are below the mean.</p>
 <p>To standardize, we follow this formula: (winPercentage - meanWinPercentage) / sdPercentage</p>
-<p>To learn more about standardizing values: <a href="http://www.statisticshowto.com/standardized-values-examples/" class="uri">http://www.statisticshowto.com/standardized-values-examples/</a></p>
+<p>To learn more about standardizing values:</p>
+<p><a href="http://www.statisticshowto.com/standardized-values-examples/" class="uri">http://www.statisticshowto.com/standardized-values-examples/</a></p>
 <p>So first, we need to find the mean and standard deviation of our win percentages. We can do this by using the summarize function and then assigning them to two variables.</p>
 <p>Next, we can use mutate to create the standardized win percentage, using the formula above.</p>
 <p>Then, we can plot a line graph of the standardized win percentages. Our reasoning for using a line graph is the same as above.</p>
@@ -684,7 +689,8 @@ upsets %&gt;% select(Tournament, Year, Winner, Loser, Surface, Round, WRank, LRa
 <p>Despite there being some bad losses above, in most cases, a match that involves Federer, Nadal or Djokovic is very quick and easy for them. Let’s analyze their dominant performances.</p>
 <p>Let’s define a dominant win as a win where the opponent has won 5 games or less. This means that Federer, Nadal, or Djokovic had to have won in straight sets by a great margin.</p>
 <p>First, we need to filter out matches that do not result in a victory for our respective player. Then, we only keep matches where the loser got 5 games or less. Then, we used the summarize operation’s n function to take the number of dominant matches for each player and add a Player attribute to help us distinguish which player came from which data frame.</p>
-<p>We also should make a separate data frame, that totals up all wins for each player, using a similar process. We want to do this so we can compare the dominant wins to the total wins. We can then join those two tables together. You can learn more about joins in R here: <a href="https://www.rdocumentation.org/packages/plyr/versions/1.8.4/topics/join" class="uri">https://www.rdocumentation.org/packages/plyr/versions/1.8.4/topics/join</a></p>
+<p>We also should make a separate data frame, that totals up all wins for each player, using a similar process. We want to do this so we can compare the dominant wins to the total wins. We can then join those two tables together. You can learn more about joins in R here:</p>
+<p><a href="https://www.rdocumentation.org/packages/plyr/versions/1.8.4/topics/join" class="uri">https://www.rdocumentation.org/packages/plyr/versions/1.8.4/topics/join</a></p>
 <p>Then, we bind the three data frames together and displayed as a table.</p>
 <pre class="r"><code>dominantRF &lt;- rfMatches %&gt;%
   filter(Winner == &quot;Federer R.&quot;) %&gt;%
