@@ -45,6 +45,7 @@ We recommend that you use RStudio as your environment to make things easier.
 
 ### Gathering and Tidying The Data
 First we need to gather data for tennis matches. We can find all ATP Men's matches from 2000 to 2016 at this link:
+
 https://www.kaggle.com/jordangoblet/atp-tour-20002016
 
 This will be formatted as a CSV or Comma-Separated Values File. We have to load this data using: read.csv
@@ -170,7 +171,7 @@ The n function simply gives the number of entities in the group. You can read it
 
 https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/n
 
-Now, for each player's data frame, we need to add a Player attribute to help us distinguish which player came from which data frame. Then, we bind or combine the three data frames together.
+Now, for each player's data frame, we need to add a Player attribute to help us distinguish which player came from which data frame. Then, we bind or combine the three data frames together using rbind. 
 
 Lastly, we can use ggplot to plot a bar graph that displays each player's Top 20 wins side by side for each year. You can learn more about ggplot here:
 
@@ -521,14 +522,46 @@ Let's briefly analyze this table:
 - Federer, despite having way more total wins, still has less dominant wins than Nadal.
 - Djokovic is the youngest of the three, so he has the least total wins and dominant wins.
 
+The results of our analysis will be in the "Messages" section at the end of our tutorial.
+
 ### Hypothesis Testing & Machine Learning
 
-The Hypothesis we will test is: Has Rafael Nadal and Novak Djokovic affected Roger Federer's career? And to what extent.
+Machine learning is making predictions based on the patterns we find in data. For this tutorial, we are going to use something called supervised machine learning. We are going to train a predictor using a training dataset. We then will check how well this predictor predicts by using it on another dataset called the testing dataset. You can learn more about supervised machine learning from this link:
 
+https://machinelearningmastery.com/supervised-and-unsupervised-machine-learning-algorithms/
 
-### Message
+The hypothesis we will test is: 
 
-Before we think of a takeaway from this tutorial/analysis, let's just go back to the results of our analysis:
+- Will Roger Federer win his next match with Rafael Nadal?
+
+Before we start, we have to look for all matches between Federer and Nadal. 
+
+To do this, we will take all of Federer's matches and use filter to get all matches with Nadal as the winner. Then, we will do it again and get every match with Nadal as the loser. Then we will combine the two data frames. We will only select a few attributes to keep the data relatively clean, since we're only focused on predicting results.
+
+```{r}
+
+fedalMatches <- rfMatches %>%
+  filter(Winner == "Nadal R.") 
+
+fedalMatches2 <- rfMatches %>%
+  filter(Loser == "Nadal R.") 
+
+fedal <- rbind(fedalMatches, fedalMatches2) %>%
+  select(Tournament, Year, Surface, Winner) %>%
+  arrange(Year)
+
+fedal
+
+```
+
+Now, we have a dataframe with outcomes for each match. What we need to do next is build a classifier for each outcome based on the predictors. 
+
+```{r}
+
+```
+
+### Messages
+Here are the results of our Exploratory Data Analysis:
 
 - Djokovic - Most Top 20 Wins in One Season
 - Federer - Most Wins on Grass Court
@@ -540,6 +573,11 @@ Before we think of a takeaway from this tutorial/analysis, let's just go back to
 - Federer - Most US Open Wins
 - Federer - Highest Win Percentage for One Season
 - Djokovic - Least Upsets
+- Federer - Most Total Wins
 - Nadal - Most Dominant Wins
 
-We can see that Federer's name shows up the most in this list, which partially supports his claim to being the Greatest Of All Time. (He actually is, if we did more analysis, we'd find that his name would show up even more times. The man has had an absolutely insane career) It's good to see that our small sample analysis matches and comes to the same conclusion on who is the GOAT.
+We can see that Federer's name shows up the most in this list, which partially supports his claim to being the Greatest Of All Time. (He actually is, if we did more analysis, we'd find that his name would show up even more times. The man is truly the greatest of all time, and countless statistics support it). Anyways, it's good to see that our small sample analysis matches and comes to the same conclusion on who is the GOAT.
+
+Here are the results of our Hypothesis and Machine Learning:
+
+In conclusion,

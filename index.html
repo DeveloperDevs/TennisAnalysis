@@ -147,7 +147,8 @@ $(document).ready(function () {
 </div>
 <div id="gathering-and-tidying-the-data" class="section level3">
 <h3>Gathering and Tidying The Data</h3>
-<p>First we need to gather data for tennis matches. We can find all ATP Men’s matches from 2000 to 2016 at this link: <a href="https://www.kaggle.com/jordangoblet/atp-tour-20002016" class="uri">https://www.kaggle.com/jordangoblet/atp-tour-20002016</a></p>
+<p>First we need to gather data for tennis matches. We can find all ATP Men’s matches from 2000 to 2016 at this link:</p>
+<p><a href="https://www.kaggle.com/jordangoblet/atp-tour-20002016" class="uri">https://www.kaggle.com/jordangoblet/atp-tour-20002016</a></p>
 <p>This will be formatted as a CSV or Comma-Separated Values File. We have to load this data using: read.csv</p>
 <p>For Tennis Fans: It is important to note that Federer and Nadal have won many many matches in 2017 and 2018 and are currently ranked number 1 and 2 right now. This data will be missing and not be included in the study due to the years not being covered in the dataset.</p>
 <p>As you can see below, we have loaded the data into a data frame.</p>
@@ -404,7 +405,7 @@ head(ndMatches)</code></pre>
 <p><a href="https://www.rdocumentation.org/packages/Hmisc/versions/4.1-1/topics/summarize" class="uri">https://www.rdocumentation.org/packages/Hmisc/versions/4.1-1/topics/summarize</a></p>
 <p>The n function simply gives the number of entities in the group. You can read its documentation here:</p>
 <p><a href="https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/n" class="uri">https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/n</a></p>
-<p>Now, for each player’s data frame, we need to add a Player attribute to help us distinguish which player came from which data frame. Then, we bind or combine the three data frames together.</p>
+<p>Now, for each player’s data frame, we need to add a Player attribute to help us distinguish which player came from which data frame. Then, we bind or combine the three data frames together using rbind.</p>
 <p>Lastly, we can use ggplot to plot a bar graph that displays each player’s Top 20 wins side by side for each year. You can learn more about ggplot here:</p>
 <p><a href="http://ggplot.yhathq.com/how-it-works.html" class="uri">http://ggplot.yhathq.com/how-it-works.html</a></p>
 <p>Let’s quickly go over why I will use a bar graph for this:</p>
@@ -746,14 +747,69 @@ dominant %&gt;% select(Player, TotalWins, DominantWins)</code></pre>
 <li>Federer, despite having way more total wins, still has less dominant wins than Nadal.</li>
 <li>Djokovic is the youngest of the three, so he has the least total wins and dominant wins.</li>
 </ul>
+<p>The results of our analysis will be in the “Messages” section at the end of our tutorial.</p>
 </div>
 <div id="hypothesis-testing-machine-learning" class="section level3">
 <h3>Hypothesis Testing &amp; Machine Learning</h3>
-<p>The Hypothesis we will test is: Has Rafael Nadal and Novak Djokovic affected Roger Federer’s career? And to what extent.</p>
+<p>Machine learning is making predictions based on the patterns we find in data. For this tutorial, we are going to use something called supervised machine learning. We are going to train a predictor using a training dataset. We then will check how well this predictor predicts by using it on another dataset called the testing dataset. You can learn more about supervised machine learning from this link:</p>
+<p><a href="https://machinelearningmastery.com/supervised-and-unsupervised-machine-learning-algorithms/" class="uri">https://machinelearningmastery.com/supervised-and-unsupervised-machine-learning-algorithms/</a></p>
+<p>The hypothesis we will test is:</p>
+<ul>
+<li>Will Roger Federer win his next match with Rafael Nadal?</li>
+</ul>
+<p>Before we start, we have to look for all matches between Federer and Nadal.</p>
+<p>To do this, we will take all of Federer’s matches and use filter to get all matches with Nadal as the winner. Then, we will do it again and get every match with Nadal as the loser. Then we will combine the two data frames. We will only select a few attributes to keep the data relatively clean, since we’re only focused on predicting results.</p>
+<pre class="r"><code>fedalMatches &lt;- rfMatches %&gt;%
+  filter(Winner == &quot;Nadal R.&quot;) 
+
+fedalMatches2 &lt;- rfMatches %&gt;%
+  filter(Loser == &quot;Nadal R.&quot;) 
+
+fedal &lt;- rbind(fedalMatches, fedalMatches2) %&gt;%
+  select(Tournament, Year, Surface, Winner) %&gt;%
+  arrange(Year)
+
+fedal</code></pre>
+<pre><code>##                                    Tournament Year Surface     Winner
+## 1                             NASDAQ-100 Open 2004    Hard   Nadal R.
+## 2                                 French Open 2005    Clay   Nadal R.
+## 3                             NASDAQ-100 Open 2005    Hard Federer R.
+## 4                  Dubai Tennis Championships 2006    Hard   Nadal R.
+## 5                         Monte Carlo Masters 2006    Clay   Nadal R.
+## 6           Campionati Internazional d'Italia 2006    Clay   Nadal R.
+## 7                                 French Open 2006    Clay   Nadal R.
+## 8                                   Wimbledon 2006   Grass Federer R.
+## 9                                 Masters Cup 2006    Hard Federer R.
+## 10                        Monte Carlo Masters 2007    Clay   Nadal R.
+## 11                                French Open 2007    Clay   Nadal R.
+## 12                                Hamburg TMS 2007    Clay Federer R.
+## 13                                  Wimbledon 2007   Grass Federer R.
+## 14                                Masters Cup 2007    Hard Federer R.
+## 15                        Monte Carlo Masters 2008    Clay   Nadal R.
+## 16                                Hamburg TMS 2008    Clay   Nadal R.
+## 17                                French Open 2008    Clay   Nadal R.
+## 18                                  Wimbledon 2008   Grass   Nadal R.
+## 19                            Australian Open 2009    Hard   Nadal R.
+## 20             Mutua Madrile\xf1a Madrid Open 2009    Clay Federer R.
+## 21             Mutua Madrile\xf1a Madrid Open 2010    Clay   Nadal R.
+## 22                                Masters Cup 2010    Hard Federer R.
+## 23                         Sony Ericsson Open 2011    Hard   Nadal R.
+## 24             Mutua Madrile\xf1a Madrid Open 2011    Clay   Nadal R.
+## 25                                French Open 2011    Clay   Nadal R.
+## 26                                Masters Cup 2011    Hard Federer R.
+## 27                            Australian Open 2012    Hard   Nadal R.
+## 28                           BNP Paribas Open 2012    Hard Federer R.
+## 29                           BNP Paribas Open 2013    Hard   Nadal R.
+## 30                Internazionali BNL d'Italia 2013    Clay   Nadal R.
+## 31 Western &amp; Southern Financial Group Masters 2013    Hard   Nadal R.
+## 32                                Masters Cup 2013    Hard   Nadal R.
+## 33                            Australian Open 2014    Hard   Nadal R.
+## 34                              Swiss Indoors 2015    Hard Federer R.</code></pre>
+<p>Now, we have a dataframe with outcomes for each match. What we need to do next is build a classifier for each outcome based on the predictors.</p>
 </div>
-<div id="message" class="section level3">
-<h3>Message</h3>
-<p>Before we think of a takeaway from this tutorial/analysis, let’s just go back to the results of our analysis:</p>
+<div id="messages" class="section level3">
+<h3>Messages</h3>
+<p>Here are the results of our Exploratory Data Analysis:</p>
 <ul>
 <li>Djokovic - Most Top 20 Wins in One Season</li>
 <li>Federer - Most Wins on Grass Court</li>
@@ -765,9 +821,12 @@ dominant %&gt;% select(Player, TotalWins, DominantWins)</code></pre>
 <li>Federer - Most US Open Wins</li>
 <li>Federer - Highest Win Percentage for One Season</li>
 <li>Djokovic - Least Upsets</li>
+<li>Federer - Most Total Wins</li>
 <li>Nadal - Most Dominant Wins</li>
 </ul>
-<p>We can see that Federer’s name shows up the most in this list, which partially supports his claim to being the Greatest Of All Time. (He actually is, if we did more analysis, we’d find that his name would show up even more times. The man has had an absolutely insane career) It’s good to see that our small sample analysis matches and comes to the same conclusion on who is the GOAT.</p>
+<p>We can see that Federer’s name shows up the most in this list, which partially supports his claim to being the Greatest Of All Time. (He actually is, if we did more analysis, we’d find that his name would show up even more times. The man is truly the greatest of all time, and countless statistics support it). Anyways, it’s good to see that our small sample analysis matches and comes to the same conclusion on who is the GOAT.</p>
+<p>Here are the results of our Hypothesis and Machine Learning:</p>
+<p>In conclusion,</p>
 </div>
 </div>
 
