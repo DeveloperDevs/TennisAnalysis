@@ -704,3 +704,37 @@ Luckily for us, this data goes to 2016, which allows us to check if our predicti
 
 Although statistics and data analysis can be used to support the greatness of a tennis player based on his past results, the very best tennis players can find a way to prove stats wrong. Countless statisticians wrote off Roger Federer many years ago due to his losses to younger rivals like Rafael Nadal and Novak Djokovic. However, at the age of 36, Roger Federer was able to prove everyone wrong by turning the tables in 2017 and 2018 to win 3 more Grand Slams and beat Rafael Nadal 4 times in a row. 
 
+
+### Sources
+
+https://en.wikipedia.org/wiki/Roger_Federer_career_statistics
+
+https://en.wikipedia.org/wiki/Rafael_Nadal_career_statistics
+
+https://en.wikipedia.org/wiki/Novak_Djokovic_career_statistics
+
+https://cran.r-project.org/index.html
+
+https://www.kaggle.com/jordangoblet/atp-tour-20002016
+
+https://www.statmethods.net/input/missingdata.html
+
+https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/group_by
+
+https://www.rdocumentation.org/packages/Hmisc/versions/4.1-1/topics/summarize
+
+https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/n
+
+http://ggplot.yhathq.com/how-it-works.html
+
+http://www.statisticshowto.com/standardized-values-examples/
+
+https://www.rdocumentation.org/packages/plyr/versions/1.8.4/topics/join
+
+https://machinelearningmastery.com/supervised-and-unsupervised-machine-learning-algorithms/
+
+https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/sample
+
+https://cran.r-project.org/web/packages/randomForest/randomForest.pdf
+
+http://www.dataschool.io/simple-guide-to-confusion-matrix-terminology/
