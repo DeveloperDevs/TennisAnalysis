@@ -4,7 +4,7 @@ output:
   word_document: default
   pdf_document: default
 ---
-```{r knitr_setup, echo=FALSE, message=FALSE}
+```{r knitr_setup, echo=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(cache=FALSE)
 library(tidyverse)
 library(dplyr)
@@ -589,17 +589,17 @@ fedalPrepped
 
 ```
 
-Now, we need to split the prepped data into training and testing subsets. We can use sample_frac to get 35% of this data. Learn more about sample_frac here:
+Now, we need to split the prepped data into training and testing subsets. We can use sample_frac to get 20% of this data. Learn more about sample_frac here:
 
 https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/sample
 
 
 ```{r}
-set.seed(4574)
+set.seed(9989)
 
 fedalTest <- fedalPrepped %>%
   group_by(Prediction) %>%
-  sample_frac(.35) %>%
+  sample_frac(.2) %>%
   ungroup()
 
 fedalTest
@@ -628,7 +628,7 @@ However, there are a couple problems:
 - Simple trees do not have a lot of predictive power
 - Its a greedy algorithm, so the absolute best model may not be found
 
-To solve these problems, We will train over a random forest. Random Forests are a popular approach that addresses the shortcomings of singular decision trees by resampling the training data. The goal of a random forest is to improve prediction performance and reduce instability. A random forest averages multiple decision trees that were constructed using a subset of the training data and a subset of the attributes on which to split. So, instead of relying on one decision tree, we are relying on the average of many decision trees. 
+To solve these problems, We will train over a random forest. A Random Forest is a popular approach to address the shortcomings of singular decision trees by resampling the training data. The goal of a random forest is to improve prediction performance and reduce instability. A random forest averages multiple decision trees that were constructed using a subset of the training data and a subset of the attributes on which to split. So, instead of relying on one decision tree, we are relying on the average of many decision trees. 
 
 To use a random forest, we will use a function from the package "randomForest", you can read more about that package here:
 
@@ -639,16 +639,28 @@ rf <- randomForest(Prediction~., data=fedalTrain %>% dplyr::select(-ID))
 rf
 ```
 
-Let's analyze exactly what this is:
+Let's analyze exactly what these results mean:
 
+- The Random Forest contains 500 trees.
+- The estimated error rate is 3.7%, meaning that the tree wrongly predicted a false positive 3.7% of the time
+- Our forest has correctly predicted Federer as the next winner 10 times
+- Our forest has incorrectly predicted Federer as the winner once, when Nadal should've been the winner based on our data
+- Our forest has correctly predicted Nadal as the next winner 16 times
 
-Now, we need to make predictions based on BOTH the training data and test data.
+So now, we let's make a confusion matrix taking into account both testing and training data. You can learn more about confusion matrices here:
+
+http://www.dataschool.io/simple-guide-to-confusion-matrix-terminology/
 
 ```{r}
 fedalPredictions <- predict(rf, newdata=fedalTest %>% dplyr::select(-ID))
 
 table(pred=fedalPredictions, observed=fedalTest$Prediction)
 ```
+
+Let's analyze exactly what these results mean:
+
+- We predict Federer as the winner of the next match 3/7 times
+- We predict Nadal as the winner of the next match 4/7 times
 
 We will discuss the implications of these results in the next section.
 
@@ -670,6 +682,25 @@ Here are the results of our Exploratory Data Analysis:
 
 We can see that Federer's name shows up the most in this list, which partially supports his claim to being the Greatest Of All Time. (He actually is, if we did more analysis, we'd find that his name would show up even more times. The man is truly the greatest of all time, and countless statistics support it). Anyways, it's good to see that our small sample analysis matches and comes to the same conclusion on who is the GOAT.
 
-Here are the results of our Hypothesis and Machine Learning:
+Here are the results of our Random Forest:
 
-In conclusion,
+- Our Random Forest predicts Federer as the winner of the next match 38.46% of the time
+- Our Random Forest predicts Nadal as the winner of the next match 61.54% of the time
+- Our Random Forest error rate is 3.7%
+
+After taking into account both the Random Forest trained data and our testing data:
+
+- We predict Federer as the winner of the next match 42.86% of the time.
+- We predict Nadal as the winner of the next match 57.14% of the time.
+
+Based on our exploratory data analysis, Roger Federer tends to have the best results overall if we look at all of the tables/plots together. This supports the fact that he is the Greatest of All Time. However, if we were to take one of his rivals like Rafael Nadal and use machine learning to predict a winner, we would actually predict a loss for Roger Federer slightly more than we would a victory. This is because Rafael Nadal has a history of beating Roger Federer many times, so the data would support the prediction of Rafael Nadal beating Roger Federer.
+
+Luckily for us, this data goes to 2016, which allows us to check if our predictions actually were correct:
+
+- They weren't correct.
+- Roger Federer has played Rafael Nadal 4 times in 2017 and won every single match, despite our predictions.
+
+##### The main message to take away from all this is:
+
+Although statistics and data analysis can be used to support the greatness of a tennis player based on his past results, the very best tennis players can find a way to prove stats wrong. Countless statisticians wrote off Roger Federer many years ago due to his losses to younger rivals like Rafael Nadal and Novak Djokovic. However, at the age of 36, Roger Federer was able to prove everyone wrong by turning the tables in 2017 and 2018 to win 3 more Grand Slams and beat Rafael Nadal 4 times in a row. 
+
