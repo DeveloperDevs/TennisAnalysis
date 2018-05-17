@@ -664,21 +664,21 @@ Let's analyze exactly what these results mean:
 
 We will discuss the implications of these results in the next section.
 
-### Messages
+### Concluding Message
 Here are the results of our Exploratory Data Analysis:
 
-- Djokovic - Most Top 20 Wins in One Season
-- Federer - Most Wins on Grass Court
-- Federer - Most Wins on Hard Court
-- Nadal - Most Wins on Clay Court
-- Federer - Most Australian Open Wins
-- Nadal - Most French Open Wins
-- Federer - Most Wimbledon Wins
-- Federer - Most US Open Wins
-- Federer - Highest Win Percentage for One Season
-- Djokovic - Least Upsets
-- Federer - Most Total Wins
-- Nadal - Most Dominant Wins
+- Most Top 20 Wins in One Season - Djokovic
+- Most Wins on Grass Court - Federer
+- Most Wins on Hard Court - Federer
+- Most Wins on Clay Court - Nadal
+- Most Australian Open Wins - Federer
+- Most French Open Wins - Nadal
+- Most Wimbledon Wins - Federer
+- Most US Open Wins - Federer
+- Highest Win Percentage for One Season - Federer
+- Least Upsets - Djokovic
+- Most Total Wins - Federer
+- Most Dominant Wins - Nadal
 
 We can see that Federer's name shows up the most in this list, which partially supports his claim to being the Greatest Of All Time. (He actually is, if we did more analysis, we'd find that his name would show up even more times. The man is truly the greatest of all time, and countless statistics support it). Anyways, it's good to see that our small sample analysis matches and comes to the same conclusion on who is the GOAT.
 
