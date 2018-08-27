@@ -123,7 +123,9 @@ Before we begin our analysis, let's quickly dive into the concepts of grouping a
 
 Sometimes it's better to just see rather than hear about it, so let's go to an example:
 
-- The main cornerstone of being an all time great, is being able to consistently beat top ranked players. So, let's look at how each of our all time greats perform against top 20 ranked players. 
+##### Top 20 Wins
+
+The main cornerstone of being an all time great, is being able to consistently beat top ranked players. So, let's look at how each of our all time greats perform against top 20 ranked players. 
 
 So, to do this, we are going to take the data frame with our respective player's winning matches and filter out all losing players with a rank greater than 20 (Which in the case of tennis, would be a worse rank). Then, we use the group_by operation to group each data frame by year so that we can later plot our player's top 20 wins per yearly season. 
 
@@ -180,6 +182,8 @@ Let's analyze this plot:
 - We also notice that Federer has great longevity, being able to consistently get more than 20 top20 wins for 10 different years. To compare, Nadal has more than 20 top 20 wins in 5 years, while Djokovic has more than 20 top 20 wins in 7 different years.
 - We can also see the effect each player has on each other. Federer had a lot of top 20 wins in 2004-2007, but as Nadal and Djokovic started improving in 2008-2016, Federer's amount of wins decreased in the later years.
 
+##### Wins By Surface
+
 As we can see in the plot above, Nadal looks relatively unimpressive compared to Federer and Djokovic, but he is considered the greatest clay court player of all time. Let's analyze wins by surface type to see if this is true.
 
 First, let's take the data frames and filter for all wins. We will also group by surface. 
@@ -229,6 +233,45 @@ Let's analyze this plot:
 - Just as Nadal has the most wins on clay, Federer has by far the most wins on Grass, doubling Djokovic and Nadal. These numbers are relatively low because there aren't many grass tournaments as there are clay and hard.
 - Carpet was a surface that was discontinued in the late 2000s, so most players do not have many wins on Carpet. Federer has more wins than Djokovic and Nadal on Carpet because he is older and was playing more before Carpet's discontinuation.
 - Hard courts are the most common surface, so it makes sense that each player would have the most wins on that surface.
+
+##### Indoor VS Outdoor Wins
+
+Sometimes the surface isn't the only court condition that affects player's results. Indoor courts tend to be faster and allow the ball to penetrate through the air more. Let's see how this affects the all time greats by checking their amount of Indoor and Outdoor match wins.
+
+```{r}
+rfCourt <- rfMatches %>%
+  filter(Winner == "Federer R.") %>%
+  group_by(Court) %>%
+  summarize(courtWins = n()) %>%
+  mutate(Player = "Federer")
+
+rnCourt <- rnMatches %>%
+  filter(Winner == "Nadal R.") %>%
+  group_by(Court) %>%
+  summarize(courtWins = n()) %>%
+  mutate(Player = "Nadal")
+
+ndCourt <- ndMatches %>%
+  filter(Winner == "Djokovic N.") %>%
+  group_by(Court) %>%
+  summarize(courtWins = n()) %>%
+  mutate(Player = "Djokovic")
+
+court <- rbind(rfCourt, rnCourt, ndCourt)
+
+ggplot(court, mapping = aes(x=Court, y=courtWins)) + 
+  geom_bar(aes(fill = Player), position = "dodge", stat="identity") + 
+  ggtitle("Indoor VS Outdoor Wins") + 
+  ylab("Wins") + xlab("Court") +
+  scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00"))
+```
+
+Let's analyze this plot:
+
+- Roger Federer seems to struggle the least with Indoor courts, having over double the amount of indoor victories than Nadal or Djokovic
+- Rafael Nadal wins majority of his matches on Outdoor courts, having the second highest outdoor wins (Nearly passing Federer) while having the lowest Indoor wins.
+
+##### Grand Slam Wins
 
 One of the biggest contributors to the GOAT (Greatest of All Time) status are Grand Slam tournaments. There are four Grand Slam tournaments each year. These four tournaments, are the most prestigious tournaments in tennis and winning the trophy at one of these four tournaments is considered a great achievement. 
 
@@ -286,6 +329,8 @@ Let's analyze this plot:
 - Federer has the most Wimbledon wins, which makes sense because Wimbledon is on grass, his favorite surface.
 - Djokovic is relatively balanced, winning approximately the same amount of matches for each slam.
 - Federer has the most wins for 3 out of the four slams, and the most wins overall. This makes sense because he has won the most grand slam titles, and has also been playing the longest.
+
+##### Win Percentage Over Time
 
 So far we've only been looking at wins. However, every player has off days which can lead to losses. Let's look at wins with losses also factored in. We can do this by looking at win percentages. 
 
@@ -347,6 +392,8 @@ Let's analyze this plot:
 - We can see that Federer's win percentage peaked in 2004-2006 and slowly moved downwards, likely due to Nadal (And then later Djokovic) rising through the ranks. He then had a resurgance in 2017 and went back upwards.
 - All three players had relatively low win percentages in the early stages of their career, except Djokovic who had a REALLY low win percentage in the early stage of his career. This is because Djokovic was really young in 2004 and started his season towards the end of the year which did not give him many matches.
 
+##### Standardized Win Percentages
+
 Now let's see how the Win Percentages would look if they are standardized. Standardizing simply takes each win percentage value and turns it into a numerical value based on it's variance. Positive numbers are above the mean, while negative numbers are below the mean.
 
 To standardize, we follow this formula:
@@ -384,6 +431,8 @@ Let's briefly analyze this plot:
 - Federer is the only player to have a standardized win percentage greater than 1.
 - In general, the line graph looks very similar to the one before; it should because it's the same data.
 
+##### Upsets
+
 Based on these last few plots, we can easily tell that Federer, Nadal and Djokovic in their primes did not lose very often. However, there are certain rare occasions where they get upset by a lower ranked player. Let's take a look at these upsets.
 
 Remember the Match Differential attribute we created earlier? Well now we can finally use it. The match differential is a measure that determines how big of an upset the match was. For big upsets, let's look at all matches with a differential less than or equal to -100.
@@ -419,6 +468,7 @@ Here are the results of our Exploratory Data Analysis:
 - Most Wins on Grass Court - Federer
 - Most Wins on Hard Court - Federer
 - Most Wins on Clay Court - Nadal
+- Most Wins on Indoor Courts - Federer
 - Most Australian Open Wins - Federer
 - Most French Open Wins - Nadal
 - Most Wimbledon Wins - Federer
@@ -429,8 +479,7 @@ Here are the results of our Exploratory Data Analysis:
 
 We can see that Federer's name shows up the most in this list, which partially supports his claim to being the Greatest Of All Time. (He actually is, if we did more analysis, we'd find that his name would show up even more times. The man is truly the greatest of all time, and countless statistics support it). Anyways, it's good to see that our small sample analysis matches and comes to the same conclusion on who is the GOAT.
 
-### MOST INDOOR WINS
-
+### WIN PERCENTAGE PER SURFACE
 ### HIGHEST ELO
 
 
@@ -473,6 +522,7 @@ fedal
 Now, we have a dataframe with outcomes for each match. What we need to do next is build a classifier for each outcome based on the predictors. 
 
 First we have to create a Game Differential attribute: 
+
 - It will be essentially Federer's Elo minus Nadal's Elo.
 - Matches won by Federer will have Nadal's Elo subtracted from his, plus an extra 250 to simulate the result ELO change
 - Matches lost by Federer will have Nadal's Elo subtracted from his, minus an extra 250 to simulate the result ELO change
