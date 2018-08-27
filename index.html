@@ -382,6 +382,38 @@ ggplot(top20, mapping = aes(x=Year, y=top20Wins)) +
 <li>We can also see the effect each player has on each other. Federer had a lot of top 20 wins in 2004-2007, but as Nadal and Djokovic started improving in 2008-2016, Federer’s amount of wins decreased in the later years.</li>
 </ul>
 </div>
+<div id="total-wins" class="section level5">
+<h5>Total Wins</h5>
+<p>Before we go further, let’s contextualize this by also finding the total number of wins for each player.</p>
+<p>We can do this by taking each data frame, filtering for the desired winner, summarize using the n function to calculate the total.</p>
+<p>Then, we can combine the three dataframes to display the total wins for each player in one data frame.</p>
+<pre class="r"><code>rfWins &lt;- rfMatches %&gt;%
+  filter(Winner == &quot;Federer R.&quot;) %&gt;%
+  summarize(TotalWins = n()) %&gt;%
+  mutate(Player = &quot;Federer&quot;)
+
+rnWins &lt;- rnMatches %&gt;%
+  filter(Winner == &quot;Nadal R.&quot;) %&gt;%
+  summarize(TotalWins = n()) %&gt;%
+  mutate(Player = &quot;Nadal&quot;)
+
+ndWins &lt;- ndMatches %&gt;%
+  filter(Winner == &quot;Djokovic N.&quot;) %&gt;%
+  summarize(TotalWins = n()) %&gt;%
+  mutate(Player = &quot;Djokovic&quot;)
+
+wins &lt;- rbind(rfWins, rnWins, ndWins)
+wins %&gt;% select(Player, TotalWins)</code></pre>
+<pre><code>##     Player TotalWins
+## 1  Federer       970
+## 2    Nadal       803
+## 3 Djokovic       687</code></pre>
+<p>Let’s analyze this:</p>
+<ul>
+<li>Federer is the oldest player of the three and has been on tour longer so it makes sense that he has the most total wins.</li>
+<li>Strangely enough, Nadal’s total wins are closer to Federer’s despite him being very close to Djokovic’s age. This is because Nadal broke through as a teenager very early on in his career.</li>
+</ul>
+</div>
 <div id="wins-by-surface" class="section level5">
 <h5>Wins By Surface</h5>
 <p>As we can see in the plot above, Nadal looks relatively unimpressive compared to Federer and Djokovic, but he is considered the greatest clay court player of all time. Let’s analyze wins by surface type to see if this is true.</p>
@@ -432,6 +464,15 @@ ggplot(surface, mapping = aes(x=Surface, y=surfaceWins)) +
 <div id="indoor-vs-outdoor-wins" class="section level5">
 <h5>Indoor VS Outdoor Wins</h5>
 <p>Sometimes the surface isn’t the only court condition that affects player’s results. Indoor courts tend to be faster and allow the ball to penetrate through the air more. Let’s see how this affects the all time greats by checking their amount of Indoor and Outdoor match wins.</p>
+<p>Similar to the process above, we take each data frame and filter for the desired winner. We then group by Court and summarize using the n function to calculate the number of wins per Court type. Then, we bind the data frames together.</p>
+<p>Lastly, we use ggplot to plot a bar graph that displays each player’s indoor/outdoor wins side by side.</p>
+<p>Let’s quickly go over why I will use a bar graph for this:</p>
+<ul>
+<li>We will use a bar graph in order to see the relationship between two things: Wins and Player Name</li>
+<li>We want to see which player: Federer, Nadal or Djokovic, had more wins</li>
+<li>The length of the bars will help us better compare the differences between each player’s wins.</li>
+<li>However, our X-Axis is Court instead of Player Name due to the context of our plot. We want to compare each player’s wins in the context of the Court type (Indoor or Outdoor). This is why we grouped our data by court and made our X-Axis the Court attribute.</li>
+</ul>
 <pre class="r"><code>rfCourt &lt;- rfMatches %&gt;%
   filter(Winner == &quot;Federer R.&quot;) %&gt;%
   group_by(Court) %&gt;%
@@ -672,9 +713,12 @@ upsets %&gt;% select(Tournament, Year, Winner, Loser, Surface, Round, WRank, LRa
 <li>Nadal has the biggest upset, against Johansson, with a differential of -688, which is way lower than other differentials (The second lowest is -317, which was a match Djokovic lost against Krajinovic)</li>
 <li>I think the most important takeaway is how few upsets there are. Federer, Nadal and Djokovic play hundreds (Over 1000 for Federer) of matches, and only had 8, 7 and 5 big upsets, respectively. This stat is a testament to how consistently good these players are.</li>
 </ul>
-<p>Here are the results of our Exploratory Data Analysis:</p>
+</div>
+<div id="results-for-exploratory-data-analysis" class="section level5">
+<h5>Results for Exploratory Data Analysis:</h5>
 <ul>
 <li>Most Top 20 Wins in One Season - Djokovic</li>
+<li>Most Total Wins - Federer</li>
 <li>Most Wins on Grass Court - Federer</li>
 <li>Most Wins on Hard Court - Federer</li>
 <li>Most Wins on Clay Court - Nadal</li>
@@ -694,9 +738,6 @@ upsets %&gt;% select(Tournament, Year, Winner, Loser, Surface, Round, WRank, LRa
 </div>
 <div id="highest-elo" class="section level3">
 <h3>HIGHEST ELO</h3>
-</div>
-<div id="total-wins" class="section level3">
-<h3>TOTAL WINS</h3>
 </div>
 <div id="hypothesis-testing-machine-learning" class="section level3">
 <h3>Hypothesis Testing &amp; Machine Learning</h3>
@@ -927,8 +968,8 @@ table(pred=fedalPredictions, observed=fedalTest$Prediction)</code></pre>
 <li>We predict Federer as the winner of the next match 4/9 times</li>
 <li>We predict Nadal as the winner of the next match 5/9 times</li>
 </ul>
-<div id="takeaway-message-for-machine-learning" class="section level5">
-<h5>Takeaway Message For Machine Learning:</h5>
+<div id="results-for-machine-learning" class="section level5">
+<h5>Results for Machine Learning:</h5>
 <p>In progress</p>
 </div>
 </div>

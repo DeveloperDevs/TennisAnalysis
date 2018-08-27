@@ -180,6 +180,39 @@ Let's analyze this plot:
 - We also notice that Federer has great longevity, being able to consistently get more than 20 top20 wins for 10 different years. To compare, Nadal has more than 20 top 20 wins in 5 years, while Djokovic has more than 20 top 20 wins in 7 different years.
 - We can also see the effect each player has on each other. Federer had a lot of top 20 wins in 2004-2007, but as Nadal and Djokovic started improving in 2008-2016, Federer's amount of wins decreased in the later years.
 
+##### Total Wins
+
+Before we go further, let's contextualize this by also finding the total number of wins for each player.
+
+We can do this by taking each data frame, filtering for the desired winner, summarize using the n function to calculate the total.
+
+Then, we can combine the three dataframes to display the total wins for each player in one data frame.
+
+```{r}
+rfWins <- rfMatches %>%
+  filter(Winner == "Federer R.") %>%
+  summarize(TotalWins = n()) %>%
+  mutate(Player = "Federer")
+
+rnWins <- rnMatches %>%
+  filter(Winner == "Nadal R.") %>%
+  summarize(TotalWins = n()) %>%
+  mutate(Player = "Nadal")
+
+ndWins <- ndMatches %>%
+  filter(Winner == "Djokovic N.") %>%
+  summarize(TotalWins = n()) %>%
+  mutate(Player = "Djokovic")
+
+wins <- rbind(rfWins, rnWins, ndWins)
+wins %>% select(Player, TotalWins)
+```
+
+Let's analyze this:
+
+- Federer is the oldest player of the three and has been on tour longer so it makes sense that he has the most total wins.
+- Strangely enough, Nadal's total wins are closer to Federer's despite him being very close to Djokovic's age. This is because Nadal broke through as a teenager very early on in his career.
+
 ##### Wins By Surface
 
 As we can see in the plot above, Nadal looks relatively unimpressive compared to Federer and Djokovic, but he is considered the greatest clay court player of all time. Let's analyze wins by surface type to see if this is true.
@@ -235,6 +268,17 @@ Let's analyze this plot:
 ##### Indoor VS Outdoor Wins
 
 Sometimes the surface isn't the only court condition that affects player's results. Indoor courts tend to be faster and allow the ball to penetrate through the air more. Let's see how this affects the all time greats by checking their amount of Indoor and Outdoor match wins.
+
+Similar to the process above, we take each data frame and filter for the desired winner. We then group by Court and summarize using the n function to calculate the number of wins per Court type. Then, we bind the data frames together.
+
+Lastly, we use ggplot to plot a bar graph that displays each player's indoor/outdoor wins side by side.
+
+Let's quickly go over why I will use a bar graph for this:
+
+- We will use a bar graph in order to see the relationship between two things: Wins and Player Name
+- We want to see which player: Federer, Nadal or Djokovic, had more wins
+- The length of the bars will help us better compare the differences between each player's wins.
+- However, our X-Axis is Court instead of Player Name due to the context of our plot. We want to compare each player's wins in the context of the Court type (Indoor or Outdoor). This is why we grouped our data by court and made our X-Axis the Court attribute.
 
 ```{r}
 rfCourt <- rfMatches %>%
@@ -460,9 +504,10 @@ Let's briefly analyze this table:
 - Nadal has the biggest upset, against Johansson, with a differential of -688, which is way lower than other differentials (The second lowest is -317, which was a match Djokovic lost against Krajinovic)
 - I think the most important takeaway is how few upsets there are. Federer, Nadal and Djokovic play hundreds (Over 1000 for Federer) of matches, and only had 8, 7 and 5 big upsets, respectively. This stat is a testament to how consistently good these players are.
 
-Here are the results of our Exploratory Data Analysis:
+##### Results for Exploratory Data Analysis:
 
 - Most Top 20 Wins in One Season - Djokovic
+- Most Total Wins - Federer
 - Most Wins on Grass Court - Federer
 - Most Wins on Hard Court - Federer
 - Most Wins on Clay Court - Nadal
@@ -478,7 +523,6 @@ We can see that Federer's name shows up the most in this list, which partially s
 
 ### WIN PERCENTAGE PER SURFACE
 ### HIGHEST ELO
-### TOTAL WINS
 
 
 ### Hypothesis Testing & Machine Learning
@@ -608,6 +652,6 @@ Let's analyze exactly what these results mean:
 - We predict Federer as the winner of the next match 4/9 times
 - We predict Nadal as the winner of the next match 5/9 times
 
-##### Takeaway Message For Machine Learning:
+##### Results for Machine Learning:
 
 In progress
