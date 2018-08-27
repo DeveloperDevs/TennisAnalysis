@@ -504,6 +504,46 @@ Let's briefly analyze this table:
 - Nadal has the biggest upset, against Johansson, with a differential of -688, which is way lower than other differentials (The second lowest is -317, which was a match Djokovic lost against Krajinovic)
 - I think the most important takeaway is how few upsets there are. Federer, Nadal and Djokovic play hundreds (Over 1000 for Federer) of matches, and only had 8, 7 and 5 big upsets, respectively. This stat is a testament to how consistently good these players are.
 
+##### Highest Elo
+
+Another stat to determine how good these players are is Elo. The Elo Rating System is a method for calculating the relative skill levels of players where each player starts at 1500 and then gain or lose Elo based on their wins and losses. Both opponent ranking and elo level factor into calculating these Elo gains/losses. Let's see which player had the highest elo, which would determine their peak skill level.
+
+To find each player's highest elo, we can filter each player's respective losses out, since we want to look for the Elo off of a win; an Elo level off of a loss is less useful because the loss would cause the player's Elo level to drop anyways. Next, we can select only the player and elo columns and arrange them by Elo in descending order, sorting them. Then, we simply take the head of each dataframe.
+
+Afterwards, we can bind all three dataframes together.
+
+```{r}
+rfElo <- rfMatches %>%
+  filter(Winner == "Federer R.") %>%
+  mutate(Player = "Federer") %>%
+  select(Player, WElo) %>%
+  arrange(desc(WElo)) %>%
+  head(1)
+
+rnElo <- rnMatches %>%
+  filter(Winner == "Nadal R.") %>%
+  mutate(Player = "Nadal") %>%
+  select(Player, WElo) %>%
+  arrange(desc(WElo)) %>%
+  head(1)
+
+ndElo <- ndMatches %>%
+  filter(Winner == "Djokovic N.") %>%
+  mutate(Player = "Djokovic") %>%
+  select(Player, WElo) %>%
+  arrange(desc(WElo)) %>%
+  head(1)
+
+elo <- rbind(rfElo, rnElo, ndElo)
+elo
+```
+
+Let's briefly analyze this:
+
+- Djokovic has the highest ELO after a match win, which means that at one specific point in time, he was the most skilled tennis player in this dataset.
+- This is likely due to his 2015 season, where he won 3 slams, 6 masters and the tour finals to have the most dominant season in tennis history.
+- All three players broke 2300 Elo, which is exceptionally high (Players start their careers with 1500 Elo)
+
 ##### Results for Exploratory Data Analysis:
 
 - Most Top 20 Wins in One Season - Djokovic
@@ -518,11 +558,11 @@ Let's briefly analyze this table:
 - Most US Open Wins - Federer
 - Highest Win Percentage for One Season - Federer
 - Least Upsets - Djokovic
+- Highest Elo - Djokovic
 
 We can see that Federer's name shows up the most in this list, which partially supports his claim to being the Greatest Of All Time. 
 
 ### WIN PERCENTAGE PER SURFACE
-### HIGHEST ELO
 
 
 ### Hypothesis Testing & Machine Learning
@@ -542,7 +582,6 @@ Why Did We Select These Attributes:
 - We need the Year to arrange our data in chronological order.
 - We need the Winner for obvious reasons (We're predicting winners)
 - We need WElo and LElo, the Elo of the winner and loser, to use as information to help fuel the predictions.
-- The Elo Rating System is a method for calculating the relative skill levels of players
 
 ```{r}
 
