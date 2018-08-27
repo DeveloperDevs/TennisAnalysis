@@ -77,8 +77,6 @@ Some players do not have a ranking, so we must replace their ranking value of NA
 tennis$WRank <- suppressWarnings(as.numeric(as.character(tennis$WRank)))
 tennis$LRank <- suppressWarnings(as.numeric(as.character(tennis$LRank)))
 tennis$LRank[is.na(tennis$LRank)] <- as.factor(1000)
-
-head(tennis)
 ```
 
 Now, there are a couple of attributes that could be useful but don't yet exist in this data frame. Let's see if we can add them by making a few calculations:
@@ -475,17 +473,17 @@ Here are the results of our Exploratory Data Analysis:
 - Most US Open Wins - Federer
 - Highest Win Percentage for One Season - Federer
 - Least Upsets - Djokovic
-- Most Total Wins - Federer
 
-We can see that Federer's name shows up the most in this list, which partially supports his claim to being the Greatest Of All Time. (He actually is, if we did more analysis, we'd find that his name would show up even more times. The man is truly the greatest of all time, and countless statistics support it). Anyways, it's good to see that our small sample analysis matches and comes to the same conclusion on who is the GOAT.
+We can see that Federer's name shows up the most in this list, which partially supports his claim to being the Greatest Of All Time. 
 
 ### WIN PERCENTAGE PER SURFACE
 ### HIGHEST ELO
+### TOTAL WINS
 
 
 ### Hypothesis Testing & Machine Learning
 
-Machine learning is making predictions based on the patterns we find in data. For this tutorial, we are going to use something called supervised machine learning. We are going to train a predictor using a training dataset. We then will check how well this predictor predicts by using it on another dataset called the testing dataset. 
+In this section we will be making predictions based on the patterns we find in data. For this tutorial, we are going to use something called supervised machine learning. We are going to train a predictor using a training dataset. We then will check how well this predictor predicts by using it on another dataset called the testing dataset. 
 
 The hypothesis we will test is: 
 
@@ -499,7 +497,8 @@ Why Did We Select These Attributes:
 
 - We need the Year to arrange our data in chronological order.
 - We need the Winner for obvious reasons (We're predicting winners)
-- We need WElo and LElo, the number of games won by the winner and won by the loser, to use as information to help fuel the predictions.
+- We need WElo and LElo, the Elo of the winner and loser, to use as information to help fuel the predictions.
+- The Elo Rating System is a method for calculating the relative skill levels of players
 
 ```{r}
 

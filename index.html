@@ -214,30 +214,7 @@ head(tennis)</code></pre>
 <p>Some players do not have a ranking, so we must replace their ranking value of NA with 1000. We can check if LRank is N/A and replace that with the value 1000. To do this, we need to convert WRank and LRank to numeric typing.</p>
 <pre class="r"><code>tennis$WRank &lt;- suppressWarnings(as.numeric(as.character(tennis$WRank)))
 tennis$LRank &lt;- suppressWarnings(as.numeric(as.character(tennis$LRank)))
-tennis$LRank[is.na(tennis$LRank)] &lt;- as.factor(1000)
-
-head(tennis)</code></pre>
-<pre><code>##                           Tournament       Date Surface BestOf
-## 1 Australian Hardcourt Championships 2000-01-03    Hard      3
-## 2                         Qatar Open 2000-01-03    Hard      3
-## 3                         Qatar Open 2000-01-03    Hard      3
-## 4                         Qatar Open 2000-01-03    Hard      3
-## 5                         Qatar Open 2000-01-03    Hard      3
-## 6                         Qatar Open 2000-01-03    Hard      3
-##          Series   Court     Round        Winner        Loser WRank LRank
-## 1 International Outdoor 1st Round    Dosedel S.  Ljubicic I.    63    77
-## 2 International Outdoor 1st Round     Kiefer N.   Tarango J.     6    59
-## 3 International Outdoor 1st Round     Gaudio G.      Luxa P.    73   174
-## 4 International Outdoor 1st Round El Aynaoui Y.    Dupuis A.    33    78
-## 5 International Outdoor 1st Round  Cherkasov A.     Arazi H.   206    35
-## 6 International Outdoor 1st Round    Caratti C. Heuberger I.   211   219
-##   WSets LSets WElo LElo
-## 1     2     0 1500 1500
-## 2     2     0 1500 1500
-## 3     2     1 1500 1500
-## 4     2     1 1500 1500
-## 5     2     0 1500 1500
-## 6     2     1 1500 1500</code></pre>
+tennis$LRank[is.na(tennis$LRank)] &lt;- as.factor(1000)</code></pre>
 <p>Now, there are a couple of attributes that could be useful but don’t yet exist in this data frame. Let’s see if we can add them by making a few calculations:</p>
 <ul>
 <li>The first will be what we call a rank differential. It is the losing players rank minus the winning players rank. This attribute will be used to determine how big of an upset, rankwise, some matches are. The lower the value is in the negatives, the more of an upset the match was.</li>
@@ -708,9 +685,8 @@ upsets %&gt;% select(Tournament, Year, Winner, Loser, Surface, Round, WRank, LRa
 <li>Most US Open Wins - Federer</li>
 <li>Highest Win Percentage for One Season - Federer</li>
 <li>Least Upsets - Djokovic</li>
-<li>Most Total Wins - Federer</li>
 </ul>
-<p>We can see that Federer’s name shows up the most in this list, which partially supports his claim to being the Greatest Of All Time. (He actually is, if we did more analysis, we’d find that his name would show up even more times. The man is truly the greatest of all time, and countless statistics support it). Anyways, it’s good to see that our small sample analysis matches and comes to the same conclusion on who is the GOAT.</p>
+<p>We can see that Federer’s name shows up the most in this list, which partially supports his claim to being the Greatest Of All Time.</p>
 </div>
 </div>
 <div id="win-percentage-per-surface" class="section level3">
@@ -719,9 +695,12 @@ upsets %&gt;% select(Tournament, Year, Winner, Loser, Surface, Round, WRank, LRa
 <div id="highest-elo" class="section level3">
 <h3>HIGHEST ELO</h3>
 </div>
+<div id="total-wins" class="section level3">
+<h3>TOTAL WINS</h3>
+</div>
 <div id="hypothesis-testing-machine-learning" class="section level3">
 <h3>Hypothesis Testing &amp; Machine Learning</h3>
-<p>Machine learning is making predictions based on the patterns we find in data. For this tutorial, we are going to use something called supervised machine learning. We are going to train a predictor using a training dataset. We then will check how well this predictor predicts by using it on another dataset called the testing dataset.</p>
+<p>In this section we will be making predictions based on the patterns we find in data. For this tutorial, we are going to use something called supervised machine learning. We are going to train a predictor using a training dataset. We then will check how well this predictor predicts by using it on another dataset called the testing dataset.</p>
 <p>The hypothesis we will test is:</p>
 <ul>
 <li>Will Roger Federer win his next match with Rafael Nadal?</li>
@@ -732,7 +711,8 @@ upsets %&gt;% select(Tournament, Year, Winner, Loser, Surface, Round, WRank, LRa
 <ul>
 <li>We need the Year to arrange our data in chronological order.</li>
 <li>We need the Winner for obvious reasons (We’re predicting winners)</li>
-<li>We need WElo and LElo, the number of games won by the winner and won by the loser, to use as information to help fuel the predictions.</li>
+<li>We need WElo and LElo, the Elo of the winner and loser, to use as information to help fuel the predictions.</li>
+<li>The Elo Rating System is a method for calculating the relative skill levels of players</li>
 </ul>
 <pre class="r"><code>fedalMatches &lt;- rfMatches %&gt;%
   filter(Winner == &quot;Nadal R.&quot;) 
