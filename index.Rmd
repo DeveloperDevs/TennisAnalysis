@@ -15,80 +15,55 @@ library(randomForest)
 
 ## An Analysis of Roger Federer, Rafael Nadal and Novak Djokovic
 
-May 15th, 2018
+##### August 25th, 2018
 
 ### Background
 Currently, tennis is experiencing the end of a "Golden Age". Right now, there are three all time greats competing at the highest stage; all while being at the closing door of their careers. These three are Roger Federer, Rafael Nadal and Novak Djokovic. 
 
-Roger Federer is a Swiss Tennis Player that is widely considered the greatest of all time (GOAT). He has won 20 Grand Slam titles, which is the most in history for ATP players. Additionally, he has broken countless ATP records, won many sports awards and is considered a fan favorite across the world. Even at the age of 36, Roger Federer is still at the top of the rankings and continues to be a strong contender for all of the biggest tournaments. You can look at his career statistics here:
+Roger Federer is a Swiss Tennis Player that is widely considered the greatest of all time (GOAT). He has won 20 Grand Slam titles, which is the most in history for ATP players. Additionally, he has broken countless ATP records, won many sports awards and is considered a fan favorite across the world. Even at the age of 37, Roger Federer is still at the top of the rankings and continues to be a strong contender for all of the biggest tournaments. 
 
-https://en.wikipedia.org/wiki/Roger_Federer_career_statistics
+Rafael Nadal is a Spanish Tennis player that is considered the other main contender for greatest of all time status. He has won 16 Grand Slam titles, which is the second most in ATP history. He is considered the greatest clay court player of all time and is another massively popular tennis player, just like Federer. At the age of 32, Rafael Nadal has shown no signs of slowing down, and is at the top of the rankings alongside Roger Federer even in 2018. 
 
-Rafael Nadal is a Spanish Tennis player that is considered the other main contender for greatest of all time status. He has won 16 Grand Slam titles, which is the second most in ATP history. He is considered the greatest clay court player of all time and is another massively popular tennis player, just like Federer. At the age of 31, Rafael Nadal has shown no signs of slowing down, and is at the top of the rankings alongside Roger Federer even in 2018. You can look at his career statistics here:
+Novak Djokovic is a Serbian Tennis Player that is well known for usurping the top spot of the rankings from Federer and Nadal. He is the youngest of the three, and after playing 3rd fiddle to Federer and Nadal, burst on to the scene in 2011 to take the crown at the top and completely dominate the tour at unprecedented levels from 2011 to 2016. He has won 13 Grand Slam titles, which puts him below Federer and Nadal, but made him a legitimate threat to both of them in terms of the GOAT argument. After recovering from surgery in early 2018, he returned to grand slam winning form by Wimbledon later that year to win his 13th slam. 
 
-https://en.wikipedia.org/wiki/Rafael_Nadal_career_statistics
-
-Novak Djokovic is a Serbian Tennis Player that is well known for usurping the top spot of the rankings from Federer and Nadal. He is the youngest of the three, and after playing 3rd fiddle to Federer and Nadal, burst on to the scene in 2011 to take the crown at the top and completely dominate the tour at unprecedented levels from 2011 to 2016. He has won 12 Grand Slam titles, which puts him below Federer and Nadal, but made him a definite threat to their legacy for sure. He is currently recovering from surgery at the moment, but could return into grand slam winning form in some time. You can look at his career statistics here:
-
-https://en.wikipedia.org/wiki/Novak_Djokovic_career_statistics
-
-This tutorial will take you through the entire data science pipeline, as we explore the performance of these three all time greats throughout their careers.
-
-
-### Required Tools
-
-You will need to download R, as well as the following packages:
-
-- tidyverse
-- dplyr
-- tidyr
-- ggplot2
-- randomForest
-
-We recommend that you use RStudio to interact with R. RStudio is an environment that makes it easier for us to install the packages above and allows us to better perform data analysis with R.
-
-R can be installed here:
-
-https://cran.r-project.org/index.html 
+Let's explore the performance of these three all time greats throughout their careers.
 
 ### Gathering and Tidying The Data
-First we need to gather data for tennis matches. We can find all ATP Men's matches from 2000 to 2016 at this link:
+First we need to gather data for tennis matches. We can find all ATP Men's matches from 2000 to March 2018 at this link:
 
-https://www.kaggle.com/jordangoblet/atp-tour-20002016
+https://www.kaggle.com/edouardthomas/atp-matches-dataset
 
 This will be formatted as a CSV or Comma-Separated Values File. We have to load this data using: read.csv
 
-For Tennis Fans: It is important to note that Federer and Nadal have won many many matches in 2017 and 2018 and are currently ranked number 1 and 2 right now. This data will be missing and not be included in the study due to the years not being covered in the dataset.
-
-As you can see below, we have loaded the data into a data frame.
+For Tennis Fans: It is important to note that matches after March 2018 are not included in the dataset; this includes Nadal's 2018 French Open victory and Djokovic's 2018 Wimbledon victory.
 
 ```{r load_data, message=FALSE}
-tennis <- read.csv("/Users/Devin/Documents/Data.csv")
+tennis <- read.csv("/Users/datvuonglee/Desktop/Data.csv")
 head(tennis)
 ```
 
 Let's look at this data a little bit:
 
-- There are a total of 54 columns
+- There are a total of 23 columns
 - The ATP attribute represents the gameweek, there are 37 "weeks" of tournaments each year (Some tournaments are two weeks)
 - We have tournament details like the Location, Tournament Name, Series, Court, Surface
-- We have match details like the Date of Match, Round, Winner, Loser, Rankings, Scores, etc
+- We have match details like the Date of Match, Round, Winner, Loser, Rankings, Set Scores, ELO etc
 - Missing data is indicated as NA
 
-Now, of the 54 columns/attributes, there are quite a few that we do not really need. Let's tidy the data by making the dataframe cleaner, with only attributes that we plan on using:
+Now, of the 23 columns/attributes, there are a few that we do not really need. Let's tidy the data by making the dataframe cleaner, with only attributes that we plan on using:
 
 - We do not need the location, since that informtion will not be necessary for this analysis since players pick and choose the tournaments they enter.
-- We do not need the court type because most courts are outdoor and this analysis will not cover whether or not the court is outdoor or indoor (because we have a lot of more important things to analyze)
-- We can safely get rid of a lot of the extra match stats like UBW, UBL, etc since those are match specific stats that aren't picked up for most tournaments.
-- These are the match attributes we need: Round, Winner, Loser, WRank, LRank, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, WSets, LSets
-- For those that are OCD, rename best.of to BestOf, Wsets to WSets, and Lsets to LSets, so they follow a common naming standard.
+- We can safely get rid of a lot of the extra match stats like PSW, PSL, B365W, etc since those are stats that aren't picked up for most tournaments.
+- We can rename a few attributes so that each attribute has a similar naming format.
 
 ```{r}
 tennis <- tennis %>%
-  dplyr::select(Tournament, Date, Surface, Best.of, Series, Round, Winner, Loser, WRank, LRank, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, Wsets, Lsets) %>%
+  dplyr::select(Tournament, Date, Surface, Best.of, Series, Court, Round, Winner, Loser, WRank, LRank, Wsets, Lsets, elo_winner, elo_loser) %>%
   rename(BestOf = Best.of) %>%
   rename(WSets = Wsets) %>%
-  rename(LSets = Lsets)
+  rename(LSets = Lsets) %>%
+  rename(WElo = elo_winner) %>%
+  rename(LElo = elo_loser)
 head(tennis)
 ```
 
@@ -96,25 +71,12 @@ Now, our data frame is smaller and easier to view, since it contains only attrib
 
 As mentioned earlier, missing data is labeled as NA. NA values can be quite a pain to deal with when performing calculations and other functions, so let's take care of it. 
 
-- Some players do not have a ranking, so we must replace their ranking value of NA with 1000. We can check if LRank is N/A and replace that with the value 1000. To do this, we need to convert WRank and LRank to numeric typing.
-- Some matches did not play a specific set (Due to injuries, etc), so we must replace those set scores with 0. We can check W1-W5 and L1-L5 for N/A values and replace with 0. These attributes are already numeric typing so we don't have to change the typing.
-- There are other ways to handle missing data other than what we just did. To learn more, check out this link here: https://www.statmethods.net/input/missingdata.html
+Some players do not have a ranking, so we must replace their ranking value of NA with 1000. We can check if LRank is N/A and replace that with the value 1000. To do this, we need to convert WRank and LRank to numeric typing.
 
 ```{r}
 tennis$WRank <- suppressWarnings(as.numeric(as.character(tennis$WRank)))
 tennis$LRank <- suppressWarnings(as.numeric(as.character(tennis$LRank)))
 tennis$LRank[is.na(tennis$LRank)] <- as.factor(1000)
-
-tennis$W1[is.na(tennis$W1)] <- 0
-tennis$L1[is.na(tennis$L1)] <- 0
-tennis$W2[is.na(tennis$W2)] <- 0
-tennis$L2[is.na(tennis$L2)] <- 0
-tennis$W3[is.na(tennis$W3)] <- 0
-tennis$L3[is.na(tennis$L3)] <- 0
-tennis$W4[is.na(tennis$W4)] <- 0
-tennis$L4[is.na(tennis$L4)] <- 0
-tennis$W5[is.na(tennis$W5)] <- 0
-tennis$L5[is.na(tennis$L5)] <- 0
 
 head(tennis)
 ```
@@ -122,17 +84,13 @@ head(tennis)
 Now, there are a couple of attributes that could be useful but don't yet exist in this data frame. Let's see if we can add them by making a few calculations:
 
 - The first will be what we call a rank differential. It is the losing players rank minus the winning players rank. This attribute will be used to determine how big of an upset, rankwise, some matches are. The lower the value is in the negatives, the more of an upset the match was. 
-- The second is the number of games won by the winner. We can calculate this by adding up the scores of W1-W5
-- The third is the number of games won by the loser. We can calculate this by adding up the scores of L1-L5
-- The fourth is Year. We are simply going to cut off the year from the Date attribute. This will help with grouping later on.
+- The second is Year. We are simply going to cut off the year from the Date attribute. This will help with grouping later on.
 
 ```{r, message=FALSE}
 tennis <- tennis %>%
   mutate(Differential = LRank - WRank) %>%
-  mutate(WGames = W1 + W2 + W3 + W4 + W5) %>%
-  mutate(LGames = L1 + L2 + L3 + L4 + L5) %>%
-  mutate(Year = format(as.Date(tennis$Date, format="%d/%m/%Y"),"%Y")) %>%
-  select(Tournament, Year, Date, Surface, BestOf, Series, Round, Winner, Loser, WRank, LRank, Differential, W1, L1, W2, L2, W3, L3, W4, L4, W5, L5, WSets, LSets, WGames, LGames) 
+  mutate(Year = format(as.Date(tennis$Date, format="%Y-%m-%d"),"%Y")) %>%
+  select(Tournament, Year, Date, Surface, Court, BestOf, Series, Round, Winner, Loser, WRank, LRank, Differential, WSets, LSets, WElo, LElo) 
 head(tennis)
 ```
 
@@ -167,23 +125,15 @@ Sometimes it's better to just see rather than hear about it, so let's go to an e
 
 - The main cornerstone of being an all time great, is being able to consistently beat top ranked players. So, let's look at how each of our all time greats perform against top 20 ranked players. 
 
-So, to do this, we are going to take the data frame with our respective player's winning matches and filter out all losing players with a rank greater than 20 (Which in the case of tennis, would be a worse rank). Then, we use the group_by operation to group each data frame by year so that we can later plot our player's top 20 wins per yearly season. You can read more about the group_by operation in R via its documentation here:
+So, to do this, we are going to take the data frame with our respective player's winning matches and filter out all losing players with a rank greater than 20 (Which in the case of tennis, would be a worse rank). Then, we use the group_by operation to group each data frame by year so that we can later plot our player's top 20 wins per yearly season. 
 
-https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/group_by
+After we have the groups, we can summarize these wins by using the n function to calculate the number of top 20 wins each player had for each season/group. 
 
-After we have the groups, we can summarize these wins by using the n function to calculate the number of top 20 wins each player had for each season/group. You can read more about the summarize operation in R here:
-
-https://www.rdocumentation.org/packages/Hmisc/versions/4.1-1/topics/summarize
-
-The n function simply gives the number of entities in the group. You can read its documentation here:
-
-https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/n
+The n function simply gives the number of entities in the group. 
 
 Now, for each player's data frame, we need to add a Player attribute to help us distinguish which player came from which data frame. Then, we bind or combine the three data frames together using rbind. 
 
-Lastly, we can use ggplot to plot a bar graph that displays each player's Top 20 wins side by side for each year. You can learn more about ggplot here:
-
-http://ggplot.yhathq.com/how-it-works.html
+Lastly, we can use ggplot to plot a bar graph that displays each player's Top 20 wins side by side for each year. 
 
 Let's quickly go over why I will use a bar graph for this:
 
@@ -227,7 +177,7 @@ ggplot(top20, mapping = aes(x=Year, y=top20Wins)) +
 Let's analyze this plot:
 
 - We notice that Djokovic has one year, 2015, where he had over 40 top 20 wins. This was his most dominant year (And the most dominant year for any player in history; Djokovic won most of the tournaments he entered that year and rarely lost)
-- We also notice that Federer has great longevity, being able to consistently get more than 20 top20 wins for 10 different years. To compare, Nadal has more than 20 top20 wins in 4 years, while Djokovic has more than 20 top20 wins in 7 different years.
+- We also notice that Federer has great longevity, being able to consistently get more than 20 top20 wins for 10 different years. To compare, Nadal has more than 20 top 20 wins in 5 years, while Djokovic has more than 20 top 20 wins in 7 different years.
 - We can also see the effect each player has on each other. Federer had a lot of top 20 wins in 2004-2007, but as Nadal and Djokovic started improving in 2008-2016, Federer's amount of wins decreased in the later years.
 
 As we can see in the plot above, Nadal looks relatively unimpressive compared to Federer and Djokovic, but he is considered the greatest clay court player of all time. Let's analyze wins by surface type to see if this is true.
@@ -280,9 +230,9 @@ Let's analyze this plot:
 - Carpet was a surface that was discontinued in the late 2000s, so most players do not have many wins on Carpet. Federer has more wins than Djokovic and Nadal on Carpet because he is older and was playing more before Carpet's discontinuation.
 - Hard courts are the most common surface, so it makes sense that each player would have the most wins on that surface.
 
-One of the biggest contributors to the GOAT (Greatest of All Time) status are Grand Slam tournaments. There are four Grand Slam tournaments each year. These four tournaments, are the most prestigious tournaments in tennis and winning the trophy at one of these four tournaments is considered a great achievement. In the last 12 years, there were only 7 different grand slam champions. Roger Federer, Rafael Nadal and Novak Djokovic have held a sustained period of dominance over grand slams, winning a combined 48 out of the last 59 slams. (Federer winning 20, Nadal winning 16, Djokovic winning 12). 
+One of the biggest contributors to the GOAT (Greatest of All Time) status are Grand Slam tournaments. There are four Grand Slam tournaments each year. These four tournaments, are the most prestigious tournaments in tennis and winning the trophy at one of these four tournaments is considered a great achievement. 
 
-- Note, Federer and Nadal have won 3 and 2 grand slams, respectively, in 2017 and 2018. So, within the bounds of this dataset (Which ends in 2016), Federer has only 17 grand slam wins and Nadal has only 14 grand slam wins.
+- Note, matches after March 2018 are not included in the dataset; this includes Nadal's 2018 French Open victory and Djokovic's 2018 Wimbledon victory. So, within the bounds of this dataset, Nadal has only 16 grand slam wins (He has 17 in reality) and Djokovic has only 12 grand slam wins (he has 13 in reality).
 
 Let's look at the amount of grand slam wins each player has won.
 
@@ -390,19 +340,17 @@ ggplot(finals, mapping = aes(x=Season, y=WinPercentage)) +
 
 Let's analyze this plot:
 
-- Federer and Djokovic both have 3 years where they had over a 0.9 win percentage
-- In comparison, Nadal only had 1 year with over a 0.9 win percentage
-- We can see that Federer's win percentage peaked in 2004-2006 and slowly moved downwards, likely due to Nadal (And then later Djokovic) rising through the ranks.
+- Federer has had 5 different years with over a 0.9 win percentage. (4 if we exclude 2018, which isn't finished yet)
+- Djokovic has had 3 different years with over a 0.9 win percentage.
+- Nadal only had 1 year with over a 0.9 win percentage
+- Federer in 2018 at the time of this dataset's creation is 1.0, since he did not lose a match. In reality, this win percentage goes down because Federer begins losing matches later in the year, which are outside this dataset's time bounds.
+- We can see that Federer's win percentage peaked in 2004-2006 and slowly moved downwards, likely due to Nadal (And then later Djokovic) rising through the ranks. He then had a resurgance in 2017 and went back upwards.
 - All three players had relatively low win percentages in the early stages of their career, except Djokovic who had a REALLY low win percentage in the early stage of his career. This is because Djokovic was really young in 2004 and started his season towards the end of the year which did not give him many matches.
 
 Now let's see how the Win Percentages would look if they are standardized. Standardizing simply takes each win percentage value and turns it into a numerical value based on it's variance. Positive numbers are above the mean, while negative numbers are below the mean.
 
 To standardize, we follow this formula:
 (winPercentage - meanWinPercentage) / sdPercentage
-
-To learn more about standardizing values:
-
-http://www.statisticshowto.com/standardized-values-examples/
 
 So first, we need to find the mean and standard deviation of our win percentages. We can do this by using the summarize function and then assigning them to two variables.
 
@@ -430,7 +378,7 @@ ggplot(standardized, mapping = aes(x=Season, y=standardizedPercentage)) +
 Let's briefly analyze this plot:
 
 - Djokovic is the only player who has standardized win percentage below -2
-- Federer has three years where he had a standardized win percentage at 1 or above.
+- Federer has four years where he had a standardized win percentage at 1 or above.
 - Djokovic only had one year with a standardized win percentage of 1.
 - Nadal did not break 1 in terms of standardized win percentages.
 - Federer is the only player to have a standardized win percentage greater than 1.
@@ -461,82 +409,34 @@ upsets %>% select(Tournament, Year, Winner, Loser, Surface, Round, WRank, LRank,
 
 Let's briefly analyze this table:
 
-- Djokovic seems to get upset the least, having only 4 big upsets, to Nadal's 8 and Federer's 6.
+- Djokovic seems to get upset the least, having only 5 big upsets, to Nadal's 7 and Federer's 8.
 - Nadal has the biggest upset, against Johansson, with a differential of -688, which is way lower than other differentials (The second lowest is -317, which was a match Djokovic lost against Krajinovic)
-- I think the most important takeaway is how few upsets there are. Federer, Nadal and Djokovic play hundreds (Over 1000 for Federer) of matches, and only had 6, 8 and 4 big upsets, respectively. This stat is a testament to how consistently good these players are.
+- I think the most important takeaway is how few upsets there are. Federer, Nadal and Djokovic play hundreds (Over 1000 for Federer) of matches, and only had 8, 7 and 5 big upsets, respectively. This stat is a testament to how consistently good these players are.
 
-Despite there being some bad losses above, in most cases, a match that involves Federer, Nadal or Djokovic is very quick and easy for them. Let's analyze their dominant performances.
+Here are the results of our Exploratory Data Analysis:
 
-Let's define a dominant win as a win where the opponent has won 5 games or less. This means that Federer, Nadal, or Djokovic had to have won in straight sets by a great margin.
+- Most Top 20 Wins in One Season - Djokovic
+- Most Wins on Grass Court - Federer
+- Most Wins on Hard Court - Federer
+- Most Wins on Clay Court - Nadal
+- Most Australian Open Wins - Federer
+- Most French Open Wins - Nadal
+- Most Wimbledon Wins - Federer
+- Most US Open Wins - Federer
+- Highest Win Percentage for One Season - Federer
+- Least Upsets - Djokovic
+- Most Total Wins - Federer
 
-First, we need to filter out matches that do not result in a victory for our respective player. Then, we only keep matches where the loser got 5 games or less. Then, we used the summarize operation's n function to take the number of dominant matches for each player and add a Player attribute to help us distinguish which player came from which data frame. 
+We can see that Federer's name shows up the most in this list, which partially supports his claim to being the Greatest Of All Time. (He actually is, if we did more analysis, we'd find that his name would show up even more times. The man is truly the greatest of all time, and countless statistics support it). Anyways, it's good to see that our small sample analysis matches and comes to the same conclusion on who is the GOAT.
 
-We also should make a separate data frame, that totals up all wins for each player, using a similar process. We want to do this so we can compare the dominant wins to the total wins. We can then join those two tables together. You can learn more about joins in R here:
+### MOST INDOOR WINS
 
-https://www.rdocumentation.org/packages/plyr/versions/1.8.4/topics/join
+### HIGHEST ELO
 
-Then, we bind the three data frames together and displayed as a table.
-
-```{r}
-dominantRF <- rfMatches %>%
-  filter(Winner == "Federer R.") %>%
-  filter(LGames <= 5) %>%
-  summarize(DominantWins = n()) %>%
-  mutate(Player = "Federer")
-
-rfWins <- rfMatches %>%
-  filter(Winner == "Federer R.") %>%
-  summarize(TotalWins = n()) %>%
-  mutate(Player = "Federer")
-
-dominantRN <- rnMatches %>%
-  filter(Winner == "Nadal R.") %>%
-  filter(LGames <= 5) %>%
-  summarize(DominantWins = n()) %>%
-  mutate(Player = "Nadal")
-
-rnWins <- rnMatches %>%
-  filter(Winner == "Nadal R.") %>%
-  summarize(TotalWins = n()) %>%
-  mutate(Player = "Nadal")
-
-dominantND <- ndMatches %>%
-  filter(Winner == "Djokovic N.") %>%
-  filter(LGames <= 5) %>%
-  summarize(DominantWins = n()) %>%
-  mutate(Player = "Djokovic")
-
-ndWins <- ndMatches %>%
-  filter(Winner == "Djokovic N.") %>%
-  summarize(TotalWins = n()) %>%
-  mutate(Player = "Djokovic")
-
-dominantRF <- dominantRF %>%
-  left_join(rfWins, by="Player")
-
-dominantRN <- dominantRN %>%
-  left_join(rnWins, by="Player")
-
-dominantND <- dominantND %>%
-  left_join(ndWins, by="Player")
-
-dominant <- rbind(dominantRF, dominantRN, dominantND)
-dominant %>% select(Player, TotalWins, DominantWins)
-```
-
-Let's briefly analyze this table:
-
-- Nadal is the player with the most dominant wins
-- Federer, despite having way more total wins, still has less dominant wins than Nadal.
-- Djokovic is the youngest of the three, so he has the least total wins and dominant wins.
-
-The results of our analysis will be in the "Messages" section at the end of our tutorial.
 
 ### Hypothesis Testing & Machine Learning
 
-Machine learning is making predictions based on the patterns we find in data. For this tutorial, we are going to use something called supervised machine learning. We are going to train a predictor using a training dataset. We then will check how well this predictor predicts by using it on another dataset called the testing dataset. You can learn more about supervised machine learning from this link:
-
-https://machinelearningmastery.com/supervised-and-unsupervised-machine-learning-algorithms/
+Machine learning is making predictions based on the patterns we find in data. For this tutorial, we are going to use something called supervised machine learning. We are going to train a predictor using a training dataset. We then will check how well this predictor predicts by using it on another dataset called the testing dataset. 
 
 The hypothesis we will test is: 
 
@@ -544,13 +444,13 @@ The hypothesis we will test is:
 
 Before we start, we have to look for all matches between Federer and Nadal. 
 
-To do this, we will take all of Federer's matches and use filter to get all matches with Nadal as the winner. Then, we will do it again and get every match with Nadal as the loser. Then we will combine the two data frames. We will only select a few attributes to keep the data relatively clean, like Year, Winner, WGames and LGames, since we're only focused on predicting results. We also need to give each row an ID.
+To do this, we will take all of Federer's matches and use filter to get all matches with Nadal as the winner. Then, we will do it again and get every match with Nadal as the loser. Then we will combine the two data frames. We will only select a few attributes to keep the data relatively clean, like Year, Winner, WElo and LElo, since we're only focused on predicting results. We also need to give each row an ID.
 
 Why Did We Select These Attributes:
 
 - We need the Year to arrange our data in chronological order.
 - We need the Winner for obvious reasons (We're predicting winners)
-- We need WGames and LGames, the number of games won by the winner and won by the loser, to use as information to help fuel the predictions.
+- We need WElo and LElo, the number of games won by the winner and won by the loser, to use as information to help fuel the predictions.
 
 ```{r}
 
@@ -561,7 +461,7 @@ fedalMatches2 <- rfMatches %>%
   filter(Loser == "Nadal R.") 
 
 fedal <- rbind(fedalMatches, fedalMatches2) %>%
-  select(Year, Winner, WGames, LGames) %>%
+  select(Year, Winner, WElo, LElo) %>%
   arrange(Year)
 
 fedal$ID <- seq.int(nrow(fedal))
@@ -573,15 +473,17 @@ fedal
 Now, we have a dataframe with outcomes for each match. What we need to do next is build a classifier for each outcome based on the predictors. 
 
 First we have to create a Game Differential attribute: 
-- It will be the number of games won by Federer, minus the number of games won by Nadal.
-- So all matches won by Nadal are negative; matches won by Federer are positive.
+- It will be essentially Federer's Elo minus Nadal's Elo.
+- Matches won by Federer will have Nadal's Elo subtracted from his, plus an extra 250 to simulate the result ELO change
+- Matches lost by Federer will have Nadal's Elo subtracted from his, minus an extra 250 to simulate the result ELO change
+- The ELO change is meant to simulate the "Mental Advantage" a win over an opponent brings for the next match. In a rivalry that is very even (a win, followed by a loss), this ELO change should even out to have no effect on the predictions. However, in rivalries where a player gets many consecutive over his rival, this ELO change could push the predictions more in the winning player's favor, regardless of their real ELO at the time.
 - This differential attribute will help us make predictions
 - Likewise, we switched the Winner attribute to a Prediction attribute so that we can better deal with typing.
 
 ```{r}
 
 fedalPrepped <- fedal %>%
-  mutate(Differential = ifelse(Winner == "Federer R.", WGames - LGames, LGames - WGames)) %>%
+  mutate(Differential = ifelse(Winner == "Federer R.", 250 + WElo - LElo, -250 + LElo - WElo)) %>%
   mutate(Prediction = ifelse(Differential >= 0, "Federer", "Nadal")) %>%
   dplyr::select(ID, Prediction, Differential)
 
@@ -591,17 +493,15 @@ fedalPrepped
 
 ```
 
-Now, we need to split the prepped data into training and testing subsets. We can use sample_frac to get 20% of this data. Learn more about sample_frac here:
-
-https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/sample
+Now, we need to split the prepped data into training and testing subsets. We can use sample_frac to get 25% of this data. 
 
 
 ```{r}
-set.seed(9989)
+set.seed(9979)
 
 fedalTest <- fedalPrepped %>%
   group_by(Prediction) %>%
-  sample_frac(.2) %>%
+  sample_frac(.25) %>%
   ungroup()
 
 fedalTest
@@ -632,9 +532,7 @@ However, there are a couple problems:
 
 To solve these problems, We will train over a random forest. A Random Forest is a popular approach to address the shortcomings of singular decision trees by resampling the training data. The goal of a random forest is to improve prediction performance and reduce instability. A random forest averages multiple decision trees that were constructed using a subset of the training data and a subset of the attributes on which to split. So, instead of relying on one decision tree, we are relying on the average of many decision trees. 
 
-To use a random forest, we will use a function from the package "randomForest", you can read more about that package here:
-
-https://cran.r-project.org/web/packages/randomForest/randomForest.pdf
+To use a random forest, we will use a function from the package "randomForest".
 
 ```{r, message=FALSE}
 rf <- randomForest(Prediction~., data=fedalTrain %>% dplyr::select(-ID))
@@ -644,14 +542,11 @@ rf
 Let's analyze exactly what these results mean:
 
 - The Random Forest contains 500 trees.
-- The estimated error rate is 3.7%, meaning that the tree wrongly predicted a false positive 3.7% of the time
-- Our forest has correctly predicted Federer as the next winner 10 times
-- Our forest has incorrectly predicted Federer as the winner once, when Nadal should've been the winner based on our data
+- The estimated error rate is 0%, meaning that the tree wrongly predicted a false positive 0% of the time
+- Our forest has correctly predicted Federer as the next winner 12 times
 - Our forest has correctly predicted Nadal as the next winner 16 times
 
-So now, we let's make a confusion matrix taking into account both testing and training data. You can learn more about confusion matrices here:
-
-http://www.dataschool.io/simple-guide-to-confusion-matrix-terminology/
+So now, we let's make a confusion matrix taking into account both testing and training data. 
 
 ```{r}
 fedalPredictions <- predict(rf, newdata=fedalTest %>% dplyr::select(-ID))
@@ -661,82 +556,9 @@ table(pred=fedalPredictions, observed=fedalTest$Prediction)
 
 Let's analyze exactly what these results mean:
 
-- We predict Federer as the winner of the next match 3/7 times
-- We predict Nadal as the winner of the next match 4/7 times
+- We predict Federer as the winner of the next match 4/9 times
+- We predict Nadal as the winner of the next match 5/9 times
 
-We will discuss the implications of these results in the next section.
+##### Takeaway Message For Machine Learning:
 
-### Concluding Message
-Here are the results of our Exploratory Data Analysis:
-
-- Most Top 20 Wins in One Season - Djokovic
-- Most Wins on Grass Court - Federer
-- Most Wins on Hard Court - Federer
-- Most Wins on Clay Court - Nadal
-- Most Australian Open Wins - Federer
-- Most French Open Wins - Nadal
-- Most Wimbledon Wins - Federer
-- Most US Open Wins - Federer
-- Highest Win Percentage for One Season - Federer
-- Least Upsets - Djokovic
-- Most Total Wins - Federer
-- Most Dominant Wins - Nadal
-
-We can see that Federer's name shows up the most in this list, which partially supports his claim to being the Greatest Of All Time. (He actually is, if we did more analysis, we'd find that his name would show up even more times. The man is truly the greatest of all time, and countless statistics support it). Anyways, it's good to see that our small sample analysis matches and comes to the same conclusion on who is the GOAT.
-
-Here are the results of our Random Forest:
-
-- Our Random Forest predicts Federer as the winner of the next match 38.46% of the time
-- Our Random Forest predicts Nadal as the winner of the next match 61.54% of the time
-- Our Random Forest error rate is 3.7%
-
-After taking into account both the Random Forest trained data and our testing data:
-
-- We predict Federer as the winner of the next match 42.86% of the time.
-- We predict Nadal as the winner of the next match 57.14% of the time.
-
-Based on our exploratory data analysis, Roger Federer tends to have the best results overall if we look at all of the tables/plots together. This supports the fact that he is the Greatest of All Time. However, if we were to take one of his rivals like Rafael Nadal and use machine learning to predict a winner, we would actually predict a loss for Roger Federer slightly more than we would a victory. This is because Rafael Nadal has a history of beating Roger Federer many times, so the data would support the prediction of Rafael Nadal beating Roger Federer.
-
-Luckily for us, this data goes to 2016, which allows us to check if our predictions actually were correct:
-
-- They weren't correct.
-- Roger Federer has played Rafael Nadal 4 times in 2017 and won every single match, despite our predictions.
-
-##### The main message to take away from all this is:
-
-Although statistics and data analysis can be used to support the greatness of a tennis player based on his past results, the very best tennis players can find a way to prove stats wrong. Countless statisticians wrote off Roger Federer many years ago due to his losses to younger rivals like Rafael Nadal and Novak Djokovic. However, at the age of 36, Roger Federer was able to prove everyone wrong by turning the tables in 2017 and 2018 to win 3 more Grand Slams and beat Rafael Nadal 4 times in a row. 
-
-
-### Sources
-
-https://en.wikipedia.org/wiki/Roger_Federer_career_statistics
-
-https://en.wikipedia.org/wiki/Rafael_Nadal_career_statistics
-
-https://en.wikipedia.org/wiki/Novak_Djokovic_career_statistics
-
-https://cran.r-project.org/index.html
-
-https://www.kaggle.com/jordangoblet/atp-tour-20002016
-
-https://www.statmethods.net/input/missingdata.html
-
-https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/group_by
-
-https://www.rdocumentation.org/packages/Hmisc/versions/4.1-1/topics/summarize
-
-https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/n
-
-http://ggplot.yhathq.com/how-it-works.html
-
-http://www.statisticshowto.com/standardized-values-examples/
-
-https://www.rdocumentation.org/packages/plyr/versions/1.8.4/topics/join
-
-https://machinelearningmastery.com/supervised-and-unsupervised-machine-learning-algorithms/
-
-https://www.rdocumentation.org/packages/dplyr/versions/0.7.3/topics/sample
-
-https://cran.r-project.org/web/packages/randomForest/randomForest.pdf
-
-http://www.dataschool.io/simple-guide-to-confusion-matrix-terminology/
+In progress
