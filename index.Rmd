@@ -170,14 +170,15 @@ ggplot(top20, mapping = aes(x=Year, y=top20Wins)) +
   geom_bar(aes(fill = Player), position = "dodge", stat="identity") + 
   ggtitle("Top 20 Wins Per Year") + 
   ylab("Top 20 Wins") + xlab("Year") +
-  scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00"))
+  scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00")) +
+  scale_y_continuous("Top 20 Wins", c(0, 5, 10, 15, 20, 25, 30, 35, 40, 45))
   
 ```
 
 Let's analyze this plot:
 
 - We notice that Djokovic has one year, 2015, where he had over 40 top 20 wins. This was his most dominant year (And the most dominant year for any player in history; Djokovic won most of the tournaments he entered that year and rarely lost)
-- We also notice that Federer has great longevity, being able to consistently get more than 20 top20 wins for 10 different years. To compare, Nadal has more than 20 top 20 wins in 5 years, while Djokovic has more than 20 top 20 wins in 7 different years.
+- We also notice that Federer has great longevity, being able to consistently get more than 20 top 20 wins for 10 different years. To compare, Nadal has more than 20 top 20 wins in 5 years, while Djokovic has more than 20 top 20 wins in 7 different years.
 - We can also see the effect each player has on each other. Federer had a lot of top 20 wins in 2004-2007, but as Nadal and Djokovic started improving in 2008-2016, Federer's amount of wins decreased in the later years.
 
 ##### Total Wins
@@ -255,7 +256,8 @@ ggplot(surface, mapping = aes(x=Surface, y=surfaceWins)) +
   geom_bar(aes(fill = Player), position = "dodge", stat="identity") + 
   ggtitle("Wins By Surface") + 
   ylab("Wins") + xlab("Surface") +
-  scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00"))
+  scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00")) +
+  scale_y_continuous("Wins", c(0, 100, 200, 300, 400, 500, 600))
 ```
 
 Let's analyze this plot:
@@ -305,7 +307,8 @@ ggplot(court, mapping = aes(x=Court, y=courtWins)) +
   geom_bar(aes(fill = Player), position = "dodge", stat="identity") + 
   ggtitle("Indoor VS Outdoor Wins") + 
   ylab("Wins") + xlab("Court") +
-  scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00"))
+  scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00")) +
+  scale_y_continuous("Wins", c(0, 100, 200, 300, 400, 500, 600, 700, 800))
 ```
 
 Let's analyze this plot:
@@ -362,7 +365,8 @@ ggplot(slams, mapping = aes(x=Tournament, y=slamWins)) +
   geom_bar(aes(fill = Player), position = "dodge", stat="identity") + 
   ggtitle("Grand Slam Wins") + 
   ylab("Wins") + xlab("Grand Slam") +
-  scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00"))
+  scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00")) +
+  scale_y_continuous("Wins", c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90))
 ```
 
 Let's analyze this plot:
@@ -422,7 +426,8 @@ ggplot(finals, mapping = aes(x=Season, y=WinPercentage)) +
   geom_line(aes(color = Player)) + 
   ggtitle("Win Percentage Over Time") + 
   ylab("Win Percentage") + xlab("Year") +
-  scale_color_manual(values=c("#999999", "#56B4E9", "#E69F00"))
+  scale_color_manual(values=c("#999999", "#56B4E9", "#E69F00")) +
+  scale_y_continuous("Win Percentage", c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1))
 ```
 
 Let's analyze this plot:
@@ -461,7 +466,8 @@ ggplot(standardized, mapping = aes(x=Season, y=standardizedPercentage)) +
   geom_line(aes(color = Player)) + 
   ggtitle("Standardized Win Percentage Over Time") + 
   ylab("Standardized Win Percentage") + xlab("Year") +
-  scale_color_manual(values=c("#999999", "#56B4E9", "#E69F00"))
+  scale_color_manual(values=c("#999999", "#56B4E9", "#E69F00")) +
+  scale_y_continuous("Standardized Win Percentage", c(-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5))
 ```
 
 Let's briefly analyze this plot:
@@ -472,6 +478,62 @@ Let's briefly analyze this plot:
 - Nadal did not break 1 in terms of standardized win percentages.
 - Federer is the only player to have a standardized win percentage greater than 1.
 - In general, the line graph looks very similar to the one before; it should because it's the same data.
+
+##### Surface Win Percentages
+
+Now that we can calculate win percentags, let's find each player's win percentage for each surface.
+
+First, let's take the data frames and group by surface. 
+
+First, we need to assign each match a value for whether or not it was a victory; 1 for win, 0 for loss. Afterwards, we can use the summarize operation to take the mean of the WonMatch attribute for each group in order to create the winPercentage for that surface.
+
+For each player's data frame, we need to add a Player attribute to help us distinguish which player came from which data frame. Then, we can bind or combine the three data frames together.
+
+Lastly, we use ggplot to plot a bar graph that displays each player's surface win percentage side by side.
+
+Let's quickly go over why I will use a bar graph for this:
+
+- We will use a bar graph in order to see the relationship between two things: Win Percentage and Player Name
+- We want to see which player: Federer, Nadal or Djokovic, had a higher win percentage
+- The length of the bars will help us better compare the differences between each player's win percentage.
+- However, our X-Axis is Surface instead of Player Name due to the context of our plot. We want to compare each player's win percentage in the context of the surface they were on. This is why we grouped our data by surface and made our X-Axis the Surface attribute.
+
+```{r}
+rfSurface <- rfMatches %>%
+  mutate(WonMatch = ifelse(Winner == "Federer R.", 1, 0)) %>%
+  group_by(Surface) %>%
+  summarize(surfaceWins = mean(WonMatch)) %>%
+  mutate(Player = "Federer")
+
+rnSurface <- rnMatches %>%
+  mutate(WonMatch = ifelse(Winner == "Nadal R.", 1, 0)) %>%
+  group_by(Surface) %>%
+  summarize(surfaceWins = mean(WonMatch)) %>%
+  mutate(Player = "Nadal")
+
+ndSurface <- ndMatches %>%
+  mutate(WonMatch = ifelse(Winner == "Djokovic N.", 1, 0)) %>%
+  group_by(Surface) %>%
+  summarize(surfaceWins = mean(WonMatch)) %>%
+  mutate(Player = "Djokovic")
+
+surface <- rbind(rfSurface, rnSurface, ndSurface)
+
+ggplot(surface, mapping = aes(x=Surface, y=surfaceWins)) + 
+  geom_bar(aes(fill = Player), position = "dodge", stat="identity") + 
+  ggtitle("Win Percentage By Surface") + 
+  ylab("Win Percentage") + xlab("Surface") +
+  scale_fill_manual(values=c("#999999", "#56B4E9", "#E69F00")) +
+  scale_y_continuous("Win Percentage", c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1))
+```
+
+Let's briefly analyze this plot:
+
+- For Hard, Grass and Clay, all three players have a win percentage of at least 0.75
+- Nadal has the highest win percentage on Clay, breaking 0.9
+- Federer has the highest win percentages on Hard and Grass, breaking 0.8 each.
+- Djokovic is very close to beating Federer's win percentage on Hard
+- Federer is the only player with a high win percentage on Carpet, since he is older and was on tour when Carpet was more prevalent as a surface.
 
 ##### Upsets
 
@@ -552,6 +614,9 @@ Let's briefly analyze this:
 - Most Wins on Hard Court - Federer
 - Most Wins on Clay Court - Nadal
 - Most Wins on Indoor Courts - Federer
+- Highest Grass Court Win Percentage - Federer
+- Highest Hard Court Win Percentage - Federer
+- Highest Clay Court Win Percentage - Nadal
 - Most Australian Open Wins - Federer
 - Most French Open Wins - Nadal
 - Most Wimbledon Wins - Federer
@@ -561,8 +626,6 @@ Let's briefly analyze this:
 - Highest Elo - Djokovic
 
 We can see that Federer's name shows up the most in this list, which partially supports his claim to being the Greatest Of All Time. 
-
-### WIN PERCENTAGE PER SURFACE
 
 
 ### Hypothesis Testing & Machine Learning
