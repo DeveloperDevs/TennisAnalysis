@@ -142,7 +142,7 @@ $(document).ready(function () {
 <p>First we need to gather data for tennis matches. We can find all ATP Men’s matches from 2000 to March 2018 at this link:</p>
 <p><a href="https://www.kaggle.com/edouardthomas/atp-matches-dataset" class="uri">https://www.kaggle.com/edouardthomas/atp-matches-dataset</a></p>
 <p>This will be formatted as a CSV or Comma-Separated Values File. We have to load this data using: read.csv</p>
-<p>For Tennis Fans: It is important to note that matches after March 2018 are not included in the dataset; this includes Nadal’s 2018 French Open victory and Djokovic’s 2018 Wimbledon victory.</p>
+<p>For Tennis Fans: It is important to note that matches after March 2018 are not included in the dataset; this includes Nadal’s 2018 French Open victory, Djokovic’s 2018 Wimbledon victory and Djokovic’s 2018 US Open victory.</p>
 <pre class="r"><code>tennis &lt;- read.csv(&quot;/Users/datvuonglee/Desktop/Data.csv&quot;)
 head(tennis)</code></pre>
 <pre><code>##   ATP Location                         Tournament       Date        Series
@@ -1065,7 +1065,15 @@ table(pred=fedalPredictions, observed=fedalTest$Prediction)</code></pre>
 <p>At the current moment, Rafael Nadal leads the head to head on Roger Federer 23-15. So, why does our prediction only predict a victory for him 5 times out of 9?</p>
 <p>Well, we have to look further into the rivalry. In the rivalry, there are many times where a bad loss can affect the next meeting between the two players. For example, when Federer lost the 2008 French Open final 1-6 3-6 0-6 to Nadal (Nadal also won the previous two times before that as well), it ended up giving Nadal a mental advantage over Federer in the next match, 2008 Wimbledon, allowing Nadal to score a victory over Federer on Federer’s favorite surface.</p>
 <p>The same thing goes into play right now. Currently, Federer has won the last 5 matches against Nadal, giving him a slight mental advantage, which is why our predictions are closer than they should be based on the head to head.</p>
-<p>It’s important to note two small things that our machine learning is missing at the moment: Court surfaces and current player form. It will be difficult to look at current player for due to the lack of a more recent dataset, but we could look at court surfaces as a factor to fuel our predictions; this will be included in the next update.</p>
+<p>It’s important to note that our machine learning process is missing many things at the moment:</p>
+<ul>
+<li>Court surface</li>
+<li>Court speed and conditions</li>
+<li>Time since last head to head match</li>
+<li>Time on court</li>
+<li>Current player form</li>
+</ul>
+<p>These factors will start to be included in the next update.</p>
 </div>
 </div>
 </div>
